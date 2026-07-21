@@ -4,7 +4,7 @@
 // ============================================================
 
 // Google AI StudioのAPIキー（スクリプトプロパティに設定）
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent';
 
 function getApiKey() {
   return PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
