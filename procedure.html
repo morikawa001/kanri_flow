@@ -461,7 +461,7 @@ showResult('loading','AI判定中...');
 
 fetch(GAS_WEB_APP_URL,{
 method:'POST',
-contentType:'application/json',
+headers:{'Content-Type':'text/plain;charset=UTF-8'},
 body:JSON.stringify({action:'judgeProcedure',emailText:text})
 }).then(function(res){
 if(!res.ok)throw new Error('HTTP '+res.status);

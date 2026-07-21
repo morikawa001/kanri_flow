@@ -80,7 +80,7 @@ const AIJudge = (function() {
   async function callGAS(emailText) {
     const response = await fetch(GAS_WEB_APP_URL, {
       method: 'POST',
-      contentType: 'application/json',
+      headers: {'Content-Type': 'text/plain;charset=UTF-8'},
       body: JSON.stringify({
         action: 'judgeProcedure',
         emailText: emailText
