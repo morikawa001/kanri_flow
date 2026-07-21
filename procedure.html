@@ -156,10 +156,8 @@
 <textarea class="mail-textarea" id="mailInput" placeholder="ここにメール本文を貼り付けてください..."></textarea>
 <div class="mail-btn-row">
 <button class="mail-judge-btn" id="judgeBtn">🤖 手続きを判定する</button>
-<button class="mail-judge-btn" id="aiJudgeBtn" style="background:var(--robot-accent);box-shadow:0 2px 8px rgba(255,107,157,.2)">✨ AIで判定する</button>
 </div>
 <div class="mail-result" id="mailResult"></div>
-<div id="aiResultArea" style="display:none"></div>
 </div>
 </div>
 </div>
@@ -261,6 +259,52 @@
 
 <script src="common.js"></script>
 <script>
+// ============================================================
+// keywords.csv からキーワード辞書を読み込む
+// ============================================================
+var keywordDict={};
+
+function loadKeywordDict(){
+fetch('keywords.csv')
+.then(function(res){
+if(!res.ok)throw new Error('keywords.csv not found');
+return res.text();
+})
+.then(function(csv){
+parseKeywordCSV(csv);
+console.log('[keywordDict] loaded',Object.keys(keywordDict).length,'procedures');
+})
+.catch(function(err){
+console.warn('[keywordDict] load failed:',err.message);
+});
+}
+
+function parseKeywordCSV(text){
+text=text.replace(/^\uFEFF/,'');
+var lines=text.split(/\r?\n/);
+var headers=lines[0].split(',').map(function(h){return h.trim();});
+var colProc=headers.indexOf('手続き');
+var colKw=headers.indexOf('キーワード');
+if(colProc===-1||colKw===-1)return;
+
+for(var i=1;i<lines.length;i++){
+var line=lines[i].trim();
+if(!line)continue;
+var cols=line.split(',').map(function(c){return c.trim();});
+var procedure=cols[colProc];
+var keyword=cols[colKw];
+if(procedure&&keyword){
+if(!keywordDict[procedure])keywordDict[procedure]=[];
+keywordDict[procedure].push(keyword);
+}
+}
+}
+
+loadKeywordDict();
+
+// ============================================================
+// 手続き判定
+// ============================================================
 document.getElementById('judgeBtn').addEventListener('click',function(){
 var text=document.getElementById('mailInput').value.trim();
 var result=document.getElementById('mailResult');
@@ -273,27 +317,33 @@ buttons.forEach(function(btn){btn.classList.remove('highlighted','dimmed');});
 return;
 }
 
-var matched=null;
-buttons.forEach(function(btn){
-var keywords=(btn.dataset.keywords||'').split(',');
-var found=false;
-keywords.forEach(function(kw){
-if(text.indexOf(kw.trim())!==-1) found=true;
+var t=text.replace(/\s/g,'');
+var bestMatch={procedure:null,count:0};
+
+for(var proc in keywordDict){
+var count=0;
+keywordDict[proc].forEach(function(kw){
+if(t.indexOf(kw)!==-1)count++;
 });
-if(found){
+if(count>bestMatch.count){
+bestMatch={procedure:proc,count:count};
+}
+}
+
+buttons.forEach(function(btn){
+var name=btn.querySelector('strong').textContent;
+if(bestMatch.procedure&&bestMatch.count>0&&name===bestMatch.procedure){
 btn.classList.add('highlighted');
 btn.classList.remove('dimmed');
-matched=btn;
 }else{
 btn.classList.remove('highlighted');
 btn.classList.add('dimmed');
 }
 });
 
-if(matched){
-var name=matched.querySelector('strong').textContent;
+if(bestMatch.procedure&&bestMatch.count>0){
 result.className='mail-result show success';
-result.innerHTML='✅ <strong>'+name+'</strong> が該当しました。ボタンをクリックして手続きを開始してください。';
+result.innerHTML='✅ <strong>'+bestMatch.procedure+'</strong> が該当しました。ボタンをクリックして手続きを開始してください。';
 }else{
 result.className='mail-result show info';
 result.textContent='🔍 該当する手続きが見つかりませんでした。手動で選択してください。';
@@ -434,127 +484,6 @@ if(status==='完了'||status==='送信済')return 100;
 return 0;
 }
 
-// ============================================================
-// AI手続き判定モジュール
-// ============================================================
-var AIJudge=(function(){
-var GAS_WEB_APP_URL='https://script.google.com/macros/s/AKfycbz2peZ5awdjK-1jeixLw4F26lhtWDWxUq8A5vo9RAKpA_MfDhJAD7lbJnRcIB5Zuyq-/exec';
-var isLoading=false;
-
-function setupUI(){
-var aiJudgeBtn=document.getElementById('aiJudgeBtn');
-if(aiJudgeBtn){
-aiJudgeBtn.addEventListener('click',handleAiJudge);
-}
-}
-
-function handleAiJudge(){
-if(isLoading)return;
-var mailInput=document.getElementById('mailInput');
-var text=mailInput?mailInput.value.trim():'';
-if(!text){
-showResult('warn','メール本文を貼り付けてください。');
-return;
-}
-setLoading(true);
-showResult('loading','AI判定中...');
-
-fetch(GAS_WEB_APP_URL,{
-method:'POST',
-headers:{'Content-Type':'text/plain;charset=UTF-8'},
-body:JSON.stringify({action:'judgeProcedure',emailText:text})
-}).then(function(res){
-if(!res.ok)throw new Error('HTTP '+res.status);
-return res.json();
-}).then(function(result){
-displayResult(result);
-setLoading(false);
-}).catch(function(err){
-showResult('error','判定エラー: '+err.message);
-setLoading(false);
-});
-}
-
-function displayResult(result){
-if(result.error){
-showResult('error',result.error);
-return;
-}
-highlightProcedure(result.procedure);
-var resultArea=document.getElementById('aiResultArea');
-if(!resultArea)return;
-var confidencePercent=Math.round(result.confidence*100);
-var details=result.details||{};
-var detailsHtml='';
-if(details.研究課題名)detailsHtml+='<div class="ai-detail"><strong>研究課題名:</strong> '+escapeHtml(details.研究課題名)+'</div>';
-if(details.報告区分)detailsHtml+='<div class="ai-detail"><strong>報告区分:</strong> '+escapeHtml(details.報告区分)+'</div>';
-if(details.jRCT番号)detailsHtml+='<div class="ai-detail"><strong>jRCT番号:</strong> '+escapeHtml(details.jRCT番号)+'</div>';
-if(details.起案番号)detailsHtml+='<div class="ai-detail"><strong>起案番号:</strong> '+escapeHtml(details.起案番号)+'</div>';
-if(details.研究責任者)detailsHtml+='<div class="ai-detail"><strong>研究責任者:</strong> '+escapeHtml(details.研究責任者)+'</div>';
-if(details.担当者)detailsHtml+='<div class="ai-detail"><strong>担当者:</strong> '+escapeHtml(details.担当者)+'</div>';
-if(details.締切日)detailsHtml+='<div class="ai-detail"><strong>締切日:</strong> '+escapeHtml(details.締切日)+'</div>';
-if(details.備考)detailsHtml+='<div class="ai-detail"><strong>備考:</strong> '+escapeHtml(details.備考)+'</div>';
-
-var procLabel=escapeHtml(result.procedure);
-resultArea.innerHTML='<div class="ai-result-card">'+
-'<div class="ai-result-header">'+
-'<span class="ai-badge">'+procLabel+'</span>'+
-'<span class="ai-confidence">信頼度: '+confidencePercent+'%</span>'+
-'</div>'+
-'<div class="ai-result-reason">'+escapeHtml(result.reason)+'</div>'+
-(detailsHtml?'<div class="ai-result-details">'+detailsHtml+'</div>':'')+
-'<div class="ai-result-actions">'+
-'<button class="ai-action-btn" onclick="AIJudge.nav(\''+procLabel+'\')">この手続きを開始する →</button>'+
-'</div></div>';
-resultArea.style.display='block';
-}
-
-function highlightProcedure(procedure){
-var buttons=document.querySelectorAll('.proc-btn');
-var map={'承認申請':0,'申請管理者報告':1,'公表管理者報告':2,'その他報告':3};
-var idx=map[procedure];
-buttons.forEach(function(btn,i){
-if(i===idx){btn.classList.add('highlighted');btn.classList.remove('dimmed');}
-else{btn.classList.remove('highlighted');btn.classList.add('dimmed');}
-});
-}
-
-function nav(procedure){
-var urls={
-'承認申請':'https://morikawa001.github.io/kanri_flow/approval.html',
-'申請管理者報告':'https://morikawa001.github.io/kanri_flow/apply_report.html',
-'公表管理者報告':'https://morikawa001.github.io/kanri_flow/publish_report.html',
-'その他報告':'https://morikawa001.github.io/kanri_flow/other_report.html'
-};
-var url=urls[procedure];
-if(url)window.location.href=url;
-}
-
-function showResult(type,message){
-var resultArea=document.getElementById('aiResultArea');
-if(!resultArea)return;
-var cls={loading:'ai-loading',warn:'ai-warn',error:'ai-error'}[type]||'ai-info';
-resultArea.innerHTML='<div class="ai-result-card '+cls+'">'+escapeHtml(message)+'</div>';
-resultArea.style.display='block';
-}
-
-function setLoading(loading){
-isLoading=loading;
-var btn=document.getElementById('aiJudgeBtn');
-if(btn){btn.disabled=loading;btn.textContent=loading?'判定中...':'✨ AIで判定する';}
-}
-
-function escapeHtml(str){
-if(!str)return'';
-var d=document.createElement('div');
-d.appendChild(document.createTextNode(str));
-return d.innerHTML;
-}
-
-return{setupUI:setupUI,nav:nav};
-})();
-
-AIJudge.setupUI();
 </script>
 </body>
 </html>

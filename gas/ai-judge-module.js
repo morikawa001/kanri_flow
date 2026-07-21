@@ -1,122 +1,143 @@
 // ============================================================
-// AI手続き判定 - HTML統合モジュール
-// GAS Webアプリ経由でGemini APIを呼び出す
+// 手続き判定モジュール（ルールベース、AI不使用）
+// クライアント側でキーワードマッチングを実行
 // ============================================================
 
-const AIJudge = (function() {
-  // GAS WebアプリのURL（デプロイ後に設定）
-  let GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz2peZ5awdjK-1jeixLw4F26lhtWDWxUq8A5vo9RAKpA_MfDhJAD7lbJnRcIB5Zuyq-/exec';
+var ProcedureJudger = (function() {
+  var MATCH_RULES = [
+    {
+      procedure: '承認申請',
+      keywords: ['承認申請', '承認', 'IRB', '倫理審査', '審査委員会', '実施承認', '臨床研究審査'],
+      reason: '承認申請に関するキーワードが含まれています'
+    },
+    {
+      procedure: '申請管理者報告',
+      keywords: ['申請管理者報告', 'CRB', '申請管理者', '管理者報告 申請', '申請管理', '登録', 'jRCT登録', 'CRB登録'],
+      reason: '申請管理者報告に関するキーワードが含まれています'
+    },
+    {
+      procedure: '公表管理者報告',
+      keywords: ['公表管理者報告', '管理者報告 公表', '公表', 'jRCT', 'JRCT', '公開', '初回公表', '研究登録番号'],
+      reason: '公表管理者報告に関するキーワードが含まれています'
+    },
+    {
+      procedure: 'その他報告',
+      keywords: ['その他報告', '不適合', '疾病', '定期報告', '医薬品', '医療機器', '不具合', '副作用', '重篤'],
+      reason: 'その他報告に関するキーワードが含まれています'
+    }
+  ];
 
-  // 状態管理
-  let isLoading = false;
-  let lastResult = null;
+  var isLoading = false;
+  var lastResult = null;
 
-  // ============================================================
-  // 初期化
-  // ============================================================
-
-  function init(gasUrl) {
-    GAS_WEB_APP_URL = gasUrl || '';
+  function init() {
     setupUI();
-    console.log('[AIJudge] 初期化完了');
+    console.log('[ProcedureJudger] 初期化完了');
   }
-
-  // ============================================================
-  // UI設定
-  // ============================================================
 
   function setupUI() {
-    // AI判定ボタンのイベントリスナー
-    const aiJudgeBtn = document.getElementById('aiJudgeBtn');
-    if (aiJudgeBtn) {
-      aiJudgeBtn.addEventListener('click', handleAiJudge);
-    }
-
-    // 結果表示エリアの初期化
-    const resultArea = document.getElementById('aiResultArea');
-    if (resultArea) {
-      resultArea.style.display = 'none';
+    var btn = document.getElementById('aiJudgeBtn');
+    if (btn) {
+      btn.addEventListener('click', handleJudge);
     }
   }
 
-  // ============================================================
-  // AI判定ハンドラ
-  // ============================================================
-
-  async function handleAiJudge() {
+  function handleJudge() {
     if (isLoading) return;
-
-    const mailInput = document.getElementById('mailInput');
-    const text = mailInput ? mailInput.value.trim() : '';
-
+    var input = document.getElementById('mailInput');
+    var text = input ? input.value.trim() : '';
     if (!text) {
       showResult('warn', 'メール本文を貼り付けてください。');
       return;
     }
 
-    if (!GAS_WEB_APP_URL) {
-      showResult('error', 'GAS WebアプリURLが設定されていません。');
-      return;
-    }
-
     setLoading(true);
-    showResult('loading', 'AI判定中...');
+    showResult('loading', '判定中...');
 
-    try {
-      const result = await callGAS(text);
+    setTimeout(function() {
+      var result = judgeByKeywords(text);
+      lastResult = result;
       displayResult(result);
-    } catch (err) {
-      console.error('[AIJudge] Error:', err);
-      showResult('error', '判定エラー: ' + err.message);
-    } finally {
       setLoading(false);
-    }
+    }, 200);
   }
 
-  // ============================================================
-  // GAS呼び出し
-  // ============================================================
+  function judgeByKeywords(text) {
+    var t = text.replace(/\s/g, '');
+    var matchedRules = [];
+    var matchCounts = [];
 
-  async function callGAS(emailText) {
-    const response = await fetch(GAS_WEB_APP_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=UTF-8'},
-      body: JSON.stringify({
-        action: 'judgeProcedure',
-        emailText: emailText
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status);
+    for (var r = 0; r < MATCH_RULES.length; r++) {
+      var rule = MATCH_RULES[r];
+      var count = 0;
+      for (var k = 0; k < rule.keywords.length; k++) {
+        if (t.indexOf(rule.keywords[k]) !== -1) count++;
+      }
+      if (count > 0) {
+        matchedRules.push(rule);
+        matchCounts.push(count);
+      }
     }
 
-    return await response.json();
+    if (matchedRules.length === 0) {
+      return {
+        procedure: null,
+        confidence: 0,
+        reason: '該当する手続きが見つかりませんでした',
+        details: {}
+      };
+    }
+
+    var bestIdx = 0;
+    for (var i = 1; i < matchedRules.length; i++) {
+      if (matchCounts[i] > matchCounts[bestIdx]) bestIdx = i;
+    }
+
+    var best = matchedRules[bestIdx];
+    var confidence = Math.min(0.99, matchCounts[bestIdx] / best.keywords.length);
+
+    return {
+      procedure: best.procedure,
+      confidence: confidence,
+      reason: best.reason,
+      details: extractDetails(text)
+    };
   }
 
-  // ============================================================
-  // 結果表示
-  // ============================================================
+  function extractDetails(text) {
+    var d = {};
+    var m;
+    m = text.match(/研究課題[名:：]\s*([^\n\r]+)/);
+    if (m) d.研究課題名 = m[1].trim();
+    m = text.match(/報告区分[：:]\s*([^\n\r]+)/);
+    if (m) d.報告区分 = m[1].trim();
+    m = text.match(/[jJ][Rr][Cc][Tt]\s*[:：]?\s*([^\s\n\r]+)/);
+    if (m) d.jRCT番号 = m[1].trim();
+    m = text.match(/起案番号[：:]\s*([^\n\r]+)/);
+    if (m) d.起案番号 = m[1].trim();
+    m = text.match(/(研究責任者|研究代表者)[：:]\s*([^\n\r]+)/);
+    if (m) d.研究責任者 = m[2].trim();
+    m = text.match(/担当[者：:]\s*([^\n\r]+)/);
+    if (m) d.担当者 = m[1].trim();
+    m = text.match(/(締切|期限)[日：:]\s*([^\n\r]+)/);
+    if (m) d.締切日 = m[2].trim();
+    return d;
+  }
 
   function displayResult(result) {
-    if (result.error) {
-      showResult('error', result.error);
+    highlightProcedure(result.procedure);
+    var resultArea = document.getElementById('aiResultArea');
+    if (!resultArea) return;
+
+    if (!result.procedure) {
+      resultArea.innerHTML = '<div class="ai-result-card ai-warn">該当する手続きが見つかりませんでした。手動で選択してください。</div>';
+      resultArea.style.display = 'block';
       return;
     }
 
-    lastResult = result;
-
-    // 手続きボタンのハイライト
-    highlightProcedure(result.procedure);
-
-    // 詳細情報の表示
-    const resultArea = document.getElementById('aiResultArea');
-    if (!resultArea) return;
-
-    const confidencePercent = Math.round(result.confidence * 100);
-    const details = result.details || {};
-
-    let detailsHtml = '';
+    var confidencePercent = Math.round(result.confidence * 100);
+    var details = result.details || {};
+    var detailsHtml = '';
     if (details.研究課題名) detailsHtml += '<div class="ai-detail"><strong>研究課題名:</strong> ' + escapeHtml(details.研究課題名) + '</div>';
     if (details.報告区分) detailsHtml += '<div class="ai-detail"><strong>報告区分:</strong> ' + escapeHtml(details.報告区分) + '</div>';
     if (details.jRCT番号) detailsHtml += '<div class="ai-detail"><strong>jRCT番号:</strong> ' + escapeHtml(details.jRCT番号) + '</div>';
@@ -126,41 +147,26 @@ const AIJudge = (function() {
     if (details.締切日) detailsHtml += '<div class="ai-detail"><strong>締切日:</strong> ' + escapeHtml(details.締切日) + '</div>';
     if (details.備考) detailsHtml += '<div class="ai-detail"><strong>備考:</strong> ' + escapeHtml(details.備考) + '</div>';
 
-    resultArea.innerHTML = `
-      <div class="ai-result-card">
-        <div class="ai-result-header">
-          <span class="ai-badge">${escapeHtml(result.procedure)}</span>
-          <span class="ai-confidence">信頼度: ${confidencePercent}%</span>
-        </div>
-        <div class="ai-result-reason">${escapeHtml(result.reason)}</div>
-        ${detailsHtml ? '<div class="ai-result-details">' + detailsHtml + '</div>' : ''}
-        <div class="ai-result-actions">
-          <button class="ai-action-btn" onclick="AIJudge.navigateToProcedure('${escapeHtml(result.procedure)}')">
-            この手続きを開始する →
-          </button>
-        </div>
-      </div>
-    `;
+    resultArea.innerHTML =
+      '<div class="ai-result-card">' +
+      '<div class="ai-result-header">' +
+      '<span class="ai-badge">' + escapeHtml(result.procedure) + '</span>' +
+      '<span class="ai-confidence">信頼度: ' + confidencePercent + '%</span>' +
+      '</div>' +
+      '<div class="ai-result-reason">' + escapeHtml(result.reason) + '</div>' +
+      (detailsHtml ? '<div class="ai-result-details">' + detailsHtml + '</div>' : '') +
+      '<div class="ai-result-actions">' +
+      '<button class="ai-action-btn" onclick="ProcedureJudger.navigateToProcedure(\'' + escapeHtml(result.procedure) + '\')">この手続きを開始する →</button>' +
+      '</div></div>';
     resultArea.style.display = 'block';
   }
 
-  // ============================================================
-  // 手続きボタンハイライト
-  // ============================================================
-
   function highlightProcedure(procedure) {
-    const buttons = document.querySelectorAll('.proc-btn');
-    const procedureMap = {
-      '承認申請': 0,
-      '申請管理者報告': 1,
-      '公表管理者報告': 2,
-      'その他報告': 3
-    };
-
-    const targetIndex = procedureMap[procedure];
-
-    buttons.forEach(function(btn, index) {
-      if (index === targetIndex) {
+    var buttons = document.querySelectorAll('.proc-btn');
+    var map = { '承認申請': 0, '申請管理者報告': 1, '公表管理者報告': 2, 'その他報告': 3 };
+    var idx = map[procedure];
+    buttons.forEach(function(btn, i) {
+      if (i === idx) {
         btn.classList.add('highlighted');
         btn.classList.remove('dimmed');
       } else {
@@ -170,159 +176,45 @@ const AIJudge = (function() {
     });
   }
 
-  // ============================================================
-  // 手続きページへ遷移
-  // ============================================================
-
   function navigateToProcedure(procedure) {
-    const urls = {
+    var urls = {
       '承認申請': 'https://morikawa001.github.io/kanri_flow/approval.html',
       '申請管理者報告': 'https://morikawa001.github.io/kanri_flow/apply_report.html',
       '公表管理者報告': 'https://morikawa001.github.io/kanri_flow/publish_report.html',
       'その他報告': 'https://morikawa001.github.io/kanri_flow/other_report.html'
     };
-
-    const url = urls[procedure];
-    if (url) {
-      window.location.href = url;
-    }
+    var url = urls[procedure];
+    if (url) window.location.href = url;
   }
 
-  // ============================================================
-  // ユーティリティ
-  // ============================================================
-
   function showResult(type, message) {
-    const resultArea = document.getElementById('aiResultArea');
+    var resultArea = document.getElementById('aiResultArea');
     if (!resultArea) return;
-
-    const cssClass = {
-      'loading': 'ai-loading',
-      'success': 'ai-success',
-      'warn': 'ai-warn',
-      'error': 'ai-error'
-    }[type] || 'ai-info';
-
-    resultArea.innerHTML = '<div class="ai-result-card ' + cssClass + '">' + escapeHtml(message) + '</div>';
+    var cls = { loading: 'ai-loading', warn: 'ai-warn', error: 'ai-error' }[type] || 'ai-info';
+    resultArea.innerHTML = '<div class="ai-result-card ' + cls + '">' + escapeHtml(message) + '</div>';
     resultArea.style.display = 'block';
   }
 
   function setLoading(loading) {
     isLoading = loading;
-    const btn = document.getElementById('aiJudgeBtn');
+    var btn = document.getElementById('aiJudgeBtn');
     if (btn) {
       btn.disabled = loading;
-      btn.textContent = loading ? '判定中...' : 'AIで判定する';
+      btn.textContent = loading ? '判定中...' : 'キーワードで判定する';
     }
   }
 
   function escapeHtml(str) {
     if (!str) return '';
-    const div = document.createElement('div');
+    var div = document.createElement('div');
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
   }
 
-  // ============================================================
-  // 公開API
-  // ============================================================
-
   return {
     init: init,
-    handleAiJudge: handleAiJudge,
+    handleJudge: handleJudge,
     navigateToProcedure: navigateToProcedure,
     getLastResult: function() { return lastResult; }
   };
 })();
-
-// ============================================================
-// CSS（HTMLページに追加するスタイル）
-// ============================================================
-
-const AI_JUDGE_CSS = `
-/* AI判定結果エリア */
-.ai-result-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 1.2rem;
-  margin-top: 0.8rem;
-  animation: slideUp 0.3s ease;
-}
-.ai-result-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
-}
-.ai-badge {
-  background: var(--primary);
-  color: var(--inv);
-  padding: 0.3rem 0.8rem;
-  border-radius: var(--pill);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-.ai-confidence {
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.ai-result-reason {
-  font-size: 0.85rem;
-  color: var(--text);
-  line-height: 1.5;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid var(--border);
-}
-.ai-result-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-.ai-detail {
-  font-size: 0.82rem;
-  padding: 0.4rem 0.6rem;
-  background: var(--surface-2);
-  border-radius: var(--r-sm);
-}
-.ai-detail strong {
-  color: var(--primary);
-  margin-right: 0.3rem;
-}
-.ai-result-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-.ai-action-btn {
-  background: var(--primary);
-  color: var(--inv);
-  padding: 0.6rem 1.2rem;
-  border-radius: var(--pill);
-  font-size: 0.82rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.ai-action-btn:hover {
-  background: var(--primary-2);
-  transform: translateY(-1px);
-}
-.ai-loading {
-  color: var(--primary);
-  text-align: center;
-  padding: 1rem;
-}
-.ai-error {
-  color: var(--error);
-  background: var(--error-soft);
-  border: 1px solid var(--error);
-}
-.ai-warn {
-  color: var(--warn);
-  background: var(--warn-soft);
-  border: 1px solid var(--warn);
-}
-`;
