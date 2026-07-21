@@ -4,7 +4,7 @@
 // ============================================================
 
 // Google AI StudioのAPIキー（スクリプトプロパティに設定）
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent';
 
 function getApiKey() {
   return PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
@@ -110,59 +110,45 @@ ${emailText}`;
 // ============================================================
 
 function callGeminiAPI(prompt, apiKey) {
-  const maxRetries = 3;
-  const retryDelay = 2000;
-  
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const payload = {
-      contents: [
-        {
-          parts: [
-            { text: prompt }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
-        topP: 0.8,
-        topK: 40
+  const payload = {
+    contents: [
+      {
+        parts: [
+          { text: prompt }
+        ]
       }
-    };
-
-    const options = {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    };
-
-    const url = GEMINI_URL + '?key=' + apiKey;
-    
-    try {
-      const response = UrlFetchApp.fetch(url, options);
-      const statusCode = response.getResponseCode();
-      const responseBody = response.getContentText();
-
-      if (statusCode === 200) {
-        const json = JSON.parse(responseBody);
-        return json;
-      }
-      
-      console.error('Gemini API Error (attempt ' + attempt + '/' + maxRetries + '):', statusCode, responseBody);
-      
-      if (attempt < maxRetries) {
-        Utilities.sleep(retryDelay * attempt);
-      }
-    } catch (e) {
-      console.error('Gemini API Exception (attempt ' + attempt + '/' + maxRetries + '):', e.message);
-      if (attempt < maxRetries) {
-        Utilities.sleep(retryDelay * attempt);
-      }
+    ],
+    generationConfig: {
+      temperature: 0.1,
+      maxOutputTokens: 1024,
+      topP: 0.8,
+      topK: 40
     }
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  const url = GEMINI_URL + '?key=' + apiKey;
+  const response = UrlFetchApp.fetch(url, options);
+  const statusCode = response.getResponseCode();
+  const responseBody = response.getContentText();
+
+  if (statusCode !== 200) {
+    console.error('Gemini API Error:', statusCode, responseBody);
+    return { error: 'Gemini API呼び出し失敗 (HTTP ' + statusCode + ')' };
   }
-  
-  return { error: 'Gemini API呼び出し失敗（リトライ' + maxRetries + '回後も失敗）' };
+
+  try {
+    const json = JSON.parse(responseBody);
+    return json;
+  } catch (e) {
+    return { error: 'レスポンス解析エラー: ' + e.message };
+  }
 }
 
 // ============================================================
