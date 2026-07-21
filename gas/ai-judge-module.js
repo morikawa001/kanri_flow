@@ -5,7 +5,7 @@
 
 const AIJudge = (function() {
   // GAS WebアプリのURL（デプロイ後に設定）
-  let GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxtuav1qFNxN13f76GzujPbwhenkEBsl7ARht3t4CoAxpO6Hesbj72oTRRn4OX68KT5/exec';
+  let GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz2peZ5awdjK-1jeixLw4F26lhtWDWxUq8A5vo9RAKpA_MfDhJAD7lbJnRcIB5Zuyq-/exec';
 
   // 状態管理
   let isLoading = false;
