@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>手続きを選択 - 管理者報告フロー統合パネル</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+--bg:#f0f4ff;--surface:#ffffff;--surface-2:#f8faff;--surface-3:#e8f0fe;--border:#d0dff5;
+--text:#2d3748;--muted:#718096;--faint:#a0aec0;--inv:#ffffff;
+--primary:#6c63ff;--primary-2:#5a52d5;--primary-light:#e8e6ff;--primary-glow:rgba(108,99,255,.15);
+--success:#48bb78;--success-soft:#c6f6d5;--success-glow:rgba(72,187,120,.1);
+--warn:#ed8936;--warn-soft:#fefcbf;
+--error:#fc8181;--error-soft:#fed7d7;
+--blue:#4299e1;--blue-soft:#bee3f8;
+--robot-accent:#ff6b9d;--robot-accent-light:#fff0f6;
+--shadow-sm:0 2px 8px rgba(108,99,255,.08),0 4px 16px rgba(108,99,255,.04);--shadow-md:0 4px 20px rgba(108,99,255,.12),0 8px 32px rgba(108,99,255,.06);--shadow-lg:0 8px 40px rgba(108,99,255,.16);
+--r-sm:.75rem;--r-md:1rem;--r-lg:1.25rem;--r-xl:1.5rem;--r-2xl:2rem;--pill:9999px;
+--font:'Satoshi','Hiragino Sans','Yu Gothic',-apple-system,sans-serif;
+}
+[data-theme="dark"]{
+--bg:#1a1f36;--surface:#252b42;--surface-2:#2d3555;--surface-3:#364063;--border:#4a5578;
+--text:#e2e8f0;--muted:#a0aec0;--faint:#718096;--inv:#1a1f36;
+--primary:#9f7aea;--primary-2:#b794f4;--primary-light:#2d2555;--primary-glow:rgba(159,122,234,.2);
+--success:#68d391;--success-soft:#1c3a2a;--success-glow:rgba(104,211,145,.15);
+--warn:#f6ad55;--warn-soft:#4a3728;
+--error:#fc8181;--error-soft:#4a2828;
+--blue:#63b3ed;--blue-soft:#253341;
+--robot-accent:#ff6b9d;--robot-accent-light:#3d2535;
+--shadow-sm:0 2px 8px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-md:0 4px 20px rgba(0,0,0,.35),0 8px 32px rgba(0,0,0,.25);--shadow-lg:0 8px 40px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,input{font:inherit}
+button{cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--primary);color:var(--inv)}
+
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border)}
+.brand{display:flex;gap:.9rem;align-items:center}
+.brand svg{width:34px;height:34px;color:var(--primary);filter:drop-shadow(0 1px 2px var(--primary-glow))}
+.brand h1{font-size:1rem;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.brand p{font-size:.74rem;color:var(--muted);letter-spacing:.01em}
+.actions{display:flex;gap:.5rem;align-items:center}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1)}
+.icon-btn:hover{background:var(--surface-3);border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+
+.select-wrap{display:flex;align-items:center;justify-content:center;flex:1;padding:2rem 1.5rem}
+.select-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);box-shadow:var(--shadow-md);max-width:640px;width:100%;overflow:hidden;animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
+.select-hd{padding:2rem 2rem 1.5rem;text-align:center;background:linear-gradient(135deg,var(--primary-light),var(--surface-2) 80%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.select-hd::before{content:'';position:absolute;top:-50%;left:-20%;width:200px;height:200px;background:radial-gradient(circle,var(--primary-glow),transparent 70%);pointer-events:none}
+.select-hd svg{width:48px;height:48px;color:var(--primary);filter:drop-shadow(0 2px 4px var(--primary-glow));margin-bottom:.8rem}
+.select-hd h3{font-size:1.15rem;font-weight:700;margin-bottom:.3rem}
+.select-hd p{font-size:.82rem;color:var(--muted);line-height:1.5}
+.select-bd{padding:1.5rem 2rem 2rem}
+
+.proc-btn{display:flex;align-items:center;gap:1.2rem;width:100%;padding:1.2rem 1.4rem;margin-bottom:1rem;background:var(--surface-2);border:2px solid var(--border);border-radius:var(--r-xl);text-align:left;transition:all .3s cubic-bezier(.4,0,.2,1);text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.proc-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(108,99,255,.1),transparent);transition:left .5s ease}
+.proc-btn:hover::before{left:100%}
+.proc-btn:last-child{margin-bottom:0}
+.proc-btn:hover{border-color:var(--primary);background:var(--primary-light);box-shadow:var(--shadow-md);transform:translateY(-3px) scale(1.02)}
+.proc-btn:active{transform:translateY(0) scale(.98);box-shadow:var(--shadow-sm)}
+.proc-icon{width:3.2rem;height:3.2rem;border-radius:var(--r-lg);display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;transition:all .3s cubic-bezier(.4,0,.2,1);background:var(--primary-light);color:var(--primary)}
+.proc-btn:hover .proc-icon{background:var(--primary);color:var(--inv);transform:scale(1.1) rotate(5deg)}
+.proc-text{flex:1;min-width:0}
+.proc-text strong{display:block;font-size:1rem;font-weight:700;margin-bottom:.15rem}
+.proc-text span{display:block;font-size:.78rem;color:var(--muted);line-height:1.4}
+.proc-arrow{font-size:1.2rem;color:var(--faint);flex-shrink:0;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.proc-btn:hover .proc-arrow{color:var(--primary);transform:translateX(6px)}
+.proc-btn.highlighted{border-color:var(--robot-accent);background:var(--robot-accent-light);box-shadow:0 0 0 3px rgba(255,107,157,.2),var(--shadow-md);transform:translateY(-3px) scale(1.02)}
+.proc-btn.highlighted .proc-icon{background:var(--robot-accent);color:var(--inv);transform:scale(1.1)}
+.proc-btn.dimmed{opacity:.4;transform:scale(.97)}
+
+.mail-section{max-width:640px;width:100%;margin:0 auto 1.5rem;padding:0 1.5rem}
+.mail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);box-shadow:var(--shadow-sm);overflow:hidden;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+.mail-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.mail-hd svg{width:24px;height:24px;color:var(--primary);flex-shrink:0}
+.mail-hd h3{font-size:.92rem;font-weight:700}
+.mail-hd p{font-size:.74rem;color:var(--muted)}
+.mail-bd{padding:1rem 1.5rem 1.2rem}
+.mail-textarea{width:100%;min-height:100px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:var(--r-md);padding:.7rem .9rem;font-size:.82rem;line-height:1.6;resize:vertical;transition:border-color .2s,box-shadow .2s;font-family:var(--font)}
+.mail-textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.mail-textarea::placeholder{color:var(--faint)}
+.mail-btn-row{display:flex;gap:.6rem;margin-top:.8rem;align-items:center}
+.mail-judge-btn{padding:.55rem 1.3rem;font-size:.82rem;font-weight:700;border-radius:var(--pill);background:var(--primary);color:var(--inv);border:none;box-shadow:0 2px 8px var(--primary-glow);transition:all .25s cubic-bezier(.4,0,.2,1)}
+.mail-judge-btn:hover{background:var(--primary-2);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
+.mail-judge-btn:active{transform:translateY(0)}
+.mail-result{margin-top:.7rem;padding:.6rem .9rem;border-radius:var(--r-md);font-size:.8rem;line-height:1.5;display:none}
+.mail-result.show{display:block}
+.mail-result.success{background:var(--success-soft);color:var(--success);border:1px solid var(--success)}
+.mail-result.info{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue)}
+.mail-result.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+
+.ai-result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.2rem;margin-top:.8rem;animation:slideUp .3s ease}
+.ai-result-header{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.ai-badge{background:var(--primary);color:var(--inv);padding:.3rem .8rem;border-radius:var(--pill);font-size:.82rem;font-weight:700}
+.ai-confidence{font-size:.78rem;color:var(--muted)}
+.ai-result-reason{font-size:.85rem;color:var(--text);line-height:1.5;margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+.ai-result-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.5rem;margin-bottom:1rem}
+.ai-detail{font-size:.82rem;padding:.4rem .6rem;background:var(--surface-2);border-radius:var(--r-sm)}
+.ai-detail strong{color:var(--primary);margin-right:.3rem}
+.ai-result-actions{display:flex;justify-content:flex-end}
+.ai-action-btn{background:var(--primary);color:var(--inv);padding:.6rem 1.2rem;border-radius:var(--pill);font-size:.82rem;font-weight:700;border:none;cursor:pointer;transition:all .2s ease}
+.ai-action-btn:hover{background:var(--primary-2);transform:translateY(-1px)}
+.ai-loading{color:var(--primary);text-align:center;padding:1rem}
+.ai-error{color:var(--error);background:var(--error-soft);border:1px solid var(--error);padding:.6rem .9rem;border-radius:var(--r-md);font-size:.8rem}
+.ai-warn{color:var(--warn);background:var(--warn-soft);border:1px solid var(--warn);padding:.6rem .9rem;border-radius:var(--r-md);font-size:.8rem}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.select-hd svg{animation:float 3s ease-in-out infinite}
+.progress-section{max-width:640px;width:100%;margin:0 auto 1.5rem;padding:0 1.5rem}
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);box-shadow:var(--shadow-sm);overflow:hidden;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+.progress-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.progress-hd svg{width:24px;height:24px;color:var(--primary);flex-shrink:0}
+.progress-hd h3{font-size:.92rem;font-weight:700}
+.progress-hd p{font-size:.74rem;color:var(--muted)}
+.progress-bd{padding:1rem 1.5rem 1.2rem}
+.csv-btn-row{display:flex;gap:.6rem;margin-bottom:1rem;align-items:center}
+.csv-load-btn{padding:.55rem 1.3rem;font-size:.82rem;font-weight:700;border-radius:var(--pill);background:var(--blue);color:var(--inv);border:none;box-shadow:0 2px 8px rgba(66,153,225,.2);transition:all .25s cubic-bezier(.4,0,.2,1)}
+.csv-load-btn:hover{background:var(--primary);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
+.csv-load-btn:active{transform:translateY(0)}
+.csv-status{font-size:.78rem;color:var(--muted)}
+.progress-table-wrap{overflow-x:auto}
+.progress-table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:800px}
+.progress-table th{padding:.6rem .8rem;text-align:left;font-weight:700;border-bottom:2px solid var(--border);color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.progress-table td{padding:.6rem .8rem;border-bottom:1px solid var(--border);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress-table tr:hover td{background:var(--surface-2)}
+.status-badge{display:inline-block;padding:.2rem .6rem;border-radius:var(--pill);font-size:.72rem;font-weight:700}
+.status-badge.not-started{background:var(--surface-3);color:var(--muted)}
+.status-badge.drafting{background:var(--warn-soft);color:var(--warn)}
+.status-badge.in-progress{background:var(--blue-soft);color:var(--blue)}
+.status-badge.completed{background:var(--success-soft);color:var(--success)}
+.progress-bar{width:60px;height:6px;background:var(--surface-3);border-radius:var(--pill);overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:var(--pill);transition:width .3s}
+.progress-bar-fill.not-started{width:0;background:var(--muted)}
+.progress-bar-fill.drafting{width:33%;background:var(--warn)}
+.progress-bar-fill.in-progress{width:66%;background:var(--blue)}
+.progress-bar-fill.completed{width:100%;background:var(--success)}
+.csv-empty{text-align:center;padding:1.5rem;color:var(--muted)}
+.csv-empty svg{width:32px;height:32px;margin-bottom:.5rem;opacity:.4}
+.csv-empty p{font-size:.85rem;margin-bottom:.2rem}
+.csv-empty span{font-size:.74rem}
+
+@media(max-width:560px){
+.select-card{max-width:100%;margin:0 1rem}
+.select-hd{padding:1.5rem 1.2rem 1.2rem}
+.select-bd{padding:1.2rem}
+.proc-btn{padding:1rem 1.1rem;gap:1rem}
+.proc-icon{width:2.8rem;height:2.8rem;font-size:1.3rem}
+.proc-text strong{font-size:.92rem}
+.brand h1{font-size:.9rem}
+.brand p{font-size:.7rem}
+.mail-section{padding:0 .85rem}
+.mail-bd{padding:.8rem 1rem 1rem}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="brand">
+<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+<rect x="8" y="12" width="32" height="28" rx="8" fill="currentColor" opacity=".15"/>
+<rect x="10" y="14" width="28" height="24" rx="6" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="18" cy="24" r="3" fill="currentColor"/>
+<circle cx="30" cy="24" r="3" fill="currentColor"/>
+<path d="M18 32h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<rect x="20" y="6" width="8" height="8" rx="2" fill="currentColor" opacity=".3"/>
+<circle cx="24" cy="6" r="3" fill="currentColor"/>
+</svg>
+<div>
+<h1>管理者報告フロー統合パネル</h1>
+<p>起案と管理者報告を切り替えて運用</p>
+</div>
+</div>
+<div class="actions">
+<button class="icon-btn" id="guideBtn" aria-label="使い方ガイド" onclick="location.href='https://morikawa001.github.io/kanri_flow/guide.html'" title="使い方ガイド">📖</button>
+<button class="icon-btn" id="themeBtn" aria-label="テーマ切替">🌙</button>
+<button class="icon-btn" id="logoutBtn" aria-label="ログアウト" onclick="location.href='https://morikawa001.github.io/kanri_flow/'" title="ログアウト">🚪</button>
+</div>
+</header>
+
+<div class="mail-section">
+<div class="mail-card">
+<div class="mail-hd">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+<div>
+<h3>メール読み込み</h3>
+<p>依頼メールの内容を貼り付けて、手続きを自動判定します</p>
+</div>
+</div>
+<div class="mail-bd">
+<textarea class="mail-textarea" id="mailInput" placeholder="ここにメール本文を貼り付けてください..."></textarea>
+<div class="mail-btn-row">
+<button class="mail-judge-btn" id="judgeBtn">🤖 手続きを判定する</button>
+<button class="mail-judge-btn" id="aiJudgeBtn" style="background:var(--robot-accent);box-shadow:0 2px 8px rgba(255,107,157,.2)">✨ AIで判定する</button>
+</div>
+<div class="mail-result" id="mailResult"></div>
+<div id="aiResultArea" style="display:none"></div>
+</div>
+</div>
+</div>
+
+<div class="select-wrap">
+<div class="select-card">
+<div class="select-hd">
+<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+<rect x="8" y="12" width="32" height="28" rx="8" fill="currentColor" opacity=".15"/>
+<rect x="10" y="14" width="28" height="24" rx="6" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="18" cy="24" r="3" fill="currentColor"/>
+<circle cx="30" cy="24" r="3" fill="currentColor"/>
+<path d="M18 32h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<rect x="20" y="6" width="8" height="8" rx="2" fill="currentColor" opacity=".3"/>
+<circle cx="24" cy="6" r="3" fill="currentColor"/>
+</svg>
+<h3>手続きを選択してください</h3>
+<p>行いたい手続きの種類を選んでください</p>
+</div>
+<div class="select-bd">
+<button class="proc-btn" data-keywords="承認,起案,実施承認" onclick="location.href='https://morikawa001.github.io/kanri_flow/approval.html'">
+<div class="proc-icon approval">✓</div>
+<div class="proc-text">
+<strong>承認申請</strong>
+<span>実施承認申請書の起案・承認手続きを行います</span>
+</div>
+<span class="proc-arrow">→</span>
+</button>
+<button class="proc-btn" data-keywords="CRB,申請,申請管理者" onclick="location.href='https://morikawa001.github.io/kanri_flow/apply_report.html'">
+<div class="proc-icon apply">📋</div>
+<div class="proc-text">
+<strong>申請管理者報告</strong>
+<span>申請に関する管理者報告の手続きを行います</span>
+</div>
+<span class="proc-arrow">→</span>
+</button>
+<button class="proc-btn" data-keywords="管理者報告,公表" onclick="location.href='https://morikawa001.github.io/kanri_flow/publish_report.html'">
+<div class="proc-icon publish">📰</div>
+<div class="proc-text">
+<strong>公表管理者報告</strong>
+<span>公表に関する管理者報告の手続きを行います</span>
+</div>
+<span class="proc-arrow">→</span>
+</button>
+<button class="proc-btn" data-keywords="不適合,疾病,定期報告" onclick="location.href='https://morikawa001.github.io/kanri_flow/other_report.html'">
+<div class="proc-icon other">📄</div>
+<div class="proc-text">
+<strong>その他報告</strong>
+<span>不適合報告・疾病等報告・定期報告などの手続きを行います</span>
+</div>
+<span class="proc-arrow">→</span>
+</button>
+</div>
+</div>
+</div>
+
+<!-- CSV読み込みセクション -->
+<div class="progress-section">
+<div class="progress-card">
+<div class="progress-hd">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+<div>
+<h3>進捗管理</h3>
+<p>CSVファイルを読み込んで手続きの進捗状況を確認します</p>
+</div>
+</div>
+<div class="progress-bd">
+<div class="csv-btn-row">
+<button class="csv-load-btn" id="csvLoadBtn">📁 CSVを読み込む</button>
+<input type="file" id="csvFileInput" accept=".csv" multiple style="display:none">
+<span class="csv-status" id="csvStatus"></span>
+</div>
+<div class="progress-table-wrap" id="progressTableWrap" style="display:none">
+<table class="progress-table" id="progressTable">
+<thead>
+<tr>
+<th>報告区分</th>
+<th>起案番号</th>
+<th>起案日</th>
+<th>担当者</th>
+<th>ステータス</th>
+<th>進捗</th>
+<th>公表日</th>
+<th>研究課題名</th>
+<th>研究責任者</th>
+</tr>
+</thead>
+<tbody id="progressTableBody"></tbody>
+</table>
+</div>
+<div class="csv-empty" id="csvEmpty">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+<p>CSVファイルが読み込まれていません</p>
+<span>「CSVを読み込む」ボタンからファイルを選択してください</span>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.getElementById('themeBtn').addEventListener('click',function(){
+var root=document.documentElement;
+var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+root.setAttribute('data-theme',next);
+this.textContent=next==='dark'?'☀️':'🌙';
+});
+
+document.getElementById('judgeBtn').addEventListener('click',function(){
+var text=document.getElementById('mailInput').value.trim();
+var result=document.getElementById('mailResult');
+var buttons=document.querySelectorAll('.proc-btn');
+
+if(!text){
+result.className='mail-result show warn';
+result.textContent='⚠️ メール本文を貼り付けてください。';
+buttons.forEach(function(btn){btn.classList.remove('highlighted','dimmed');});
+return;
+}
+
+var matched=null;
+buttons.forEach(function(btn){
+var keywords=(btn.dataset.keywords||'').split(',');
+var found=false;
+keywords.forEach(function(kw){
+if(text.indexOf(kw.trim())!==-1) found=true;
+});
+if(found){
+btn.classList.add('highlighted');
+btn.classList.remove('dimmed');
+matched=btn;
+}else{
+btn.classList.remove('highlighted');
+btn.classList.add('dimmed');
+}
+});
+
+if(matched){
+var name=matched.querySelector('strong').textContent;
+result.className='mail-result show success';
+result.innerHTML='✅ <strong>'+name+'</strong> が該当しました。ボタンをクリックして手続きを開始してください。';
+}else{
+result.className='mail-result show info';
+result.textContent='🔍 該当する手続きが見つかりませんでした。手動で選択してください。';
+buttons.forEach(function(btn){btn.classList.remove('highlighted','dimmed');});
+}
+});
+
+// CSV読み込み機能
+var csvLoadBtn=document.getElementById('csvLoadBtn');
+var csvFileInput=document.getElementById('csvFileInput');
+var csvStatus=document.getElementById('csvStatus');
+var progressTableWrap=document.getElementById('progressTableWrap');
+var progressTableBody=document.getElementById('progressTableBody');
+var csvEmpty=document.getElementById('csvEmpty');
+
+csvLoadBtn.addEventListener('click',function(){
+csvFileInput.click();
+});
+
+csvFileInput.addEventListener('change',function(e){
+var files=e.target.files;
+if(!files.length)return;
+
+csvStatus.textContent='読み込み中...';
+progressTableBody.innerHTML='';
+var loadedCount=0;
+
+Array.from(files).forEach(function(file){
+var reader=new FileReader();
+reader.onload=function(evt){
+var csv=evt.target.result;
+var rows=parseCSV(csv);
+
+console.log('CSV parsed rows:',rows);
+console.log('Headers:',rows[0]);
+
+// ヘッダー行をスキップしてデータ行を処理
+var headers=rows[0];
+for(var i=1;i<rows.length;i++){
+if(rows[i].length>=3){
+console.log('Row',i,':',rows[i]);
+var tr=createProgressRow(rows[i],headers);
+progressTableBody.appendChild(tr);
+}
+}
+loadedCount++;
+if(loadedCount===files.length){
+csvStatus.textContent=files.length+'件のファイルを読み込みました';
+progressTableWrap.style.display='block';
+csvEmpty.style.display='none';
+}
+};
+reader.readAsText(file,'UTF-8');
+});
+});
+
+function parseCSV(text){
+// BOMを除去
+text=text.replace(/^\uFEFF/,'');
+// タブ区切りの検出
+var lines=text.split(/\r?\n/);
+var result=[];
+lines.forEach(function(line){
+if(line.trim()){
+// タブ区切りを優先、なければカンマ区切り
+var row;
+if(line.indexOf('\t')!==-1){
+row=line.split('\t').map(function(c){return c.trim();});
+}else{
+row=line.split(',').map(function(c){return c.trim();});
+}
+result.push(row);
+}
+});
+return result;
+}
+
+function findHeaderIndex(headers,name){
+// 完全一致、部分一致、大文字小文字を考慮した検索
+for(var i=0;i<headers.length;i++){
+var h=headers[i].toLowerCase().replace(/[\s_]/g,'');
+var n=name.toLowerCase().replace(/[\s_]/g,'');
+if(h===n||h.indexOf(n)!==-1||n.indexOf(h)!==-1)return i;
+}
+return -1;
+}
+
+function createProgressRow(data,headers){
+var tr=document.createElement('tr');
+
+// ヘッダーから各カラムのインデックスを検索
+var idxReport=findHeaderIndex(headers,'報告区分');
+var idxNo=findHeaderIndex(headers,'起案番号');
+var idxDate=findHeaderIndex(headers,'起案日');
+var idxPerson=findHeaderIndex(headers,'担当者');
+var idxStatus=findHeaderIndex(headers,'ステータス');
+var idxPubDate=findHeaderIndex(headers,'公表日');
+var idxTitle=findHeaderIndex(headers,'研究課題名');
+var idxManager=findHeaderIndex(headers,'研究責任者');
+
+var report=idxReport>=0?(data[idxReport]||''):'';
+var no=idxNo>=0?(data[idxNo]||''):'';
+var date=idxDate>=0?(data[idxDate]||''):'';
+var person=idxPerson>=0?(data[idxPerson]||''):'';
+var status=idxStatus>=0?(data[idxStatus]||''):'';
+var pubDate=idxPubDate>=0?(data[idxPubDate]||''):'';
+var title=idxTitle>=0?(data[idxTitle]||''):'';
+var manager=idxManager>=0?(data[idxManager]||''):'';
+
+var statusClass=getStatusClass(status);
+var progress=getProgressPercent(status);
+
+tr.innerHTML='<td>'+report+'</td>'+
+'<td>'+no+'</td>'+
+'<td>'+date+'</td>'+
+'<td>'+person+'</td>'+
+'<td><span class="status-badge '+statusClass+'">'+status+'</span></td>'+
+'<td><div class="progress-bar"><div class="progress-bar-fill '+statusClass+'" style="width:'+progress+'%"></div></div></td>'+
+'<td>'+pubDate+'</td>'+
+'<td>'+title+'</td>'+
+'<td>'+manager+'</td>';
+return tr;
+}
+
+function getStatusClass(status){
+if(!status)return 'not-started';
+if(status==='起案中')return 'drafting';
+if(status==='進行中')return 'in-progress';
+if(status==='完了'||status==='送信済')return 'completed';
+return 'not-started';
+}
+
+function getProgressPercent(status){
+if(!status)return 0;
+if(status==='起案中')return 33;
+if(status==='進行中')return 66;
+if(status==='完了'||status==='送信済')return 100;
+return 0;
+}
+
+// ============================================================
+// AI手続き判定モジュール
+// ============================================================
+var AIJudge=(function(){
+var GAS_WEB_APP_URL='https://script.google.com/macros/s/AKfycby5QdVOBRQ_TOZ_YZ4eQLZtqPEj55wF2w4J8_dWAiVh0yIQdi4RX-Au3kG4l-areTw9/exec';
+var isLoading=false;
+
+function setupUI(){
+var aiJudgeBtn=document.getElementById('aiJudgeBtn');
+if(aiJudgeBtn){
+aiJudgeBtn.addEventListener('click',handleAiJudge);
+}
+}
+
+function handleAiJudge(){
+if(isLoading)return;
+var mailInput=document.getElementById('mailInput');
+var text=mailInput?mailInput.value.trim():'';
+if(!text){
+showResult('warn','メール本文を貼り付けてください。');
+return;
+}
+setLoading(true);
+showResult('loading','AI判定中...');
+
+fetch(GAS_WEB_APP_URL,{
+method:'POST',
+contentType:'application/json',
+body:JSON.stringify({action:'judgeProcedure',emailText:text})
+}).then(function(res){
+if(!res.ok)throw new Error('HTTP '+res.status);
+return res.json();
+}).then(function(result){
+displayResult(result);
+setLoading(false);
+}).catch(function(err){
+showResult('error','判定エラー: '+err.message);
+setLoading(false);
+});
+}
+
+function displayResult(result){
+if(result.error){
+showResult('error',result.error);
+return;
+}
+highlightProcedure(result.procedure);
+var resultArea=document.getElementById('aiResultArea');
+if(!resultArea)return;
+var confidencePercent=Math.round(result.confidence*100);
+var details=result.details||{};
+var detailsHtml='';
+if(details.研究課題名)detailsHtml+='<div class="ai-detail"><strong>研究課題名:</strong> '+escapeHtml(details.研究課題名)+'</div>';
+if(details.報告区分)detailsHtml+='<div class="ai-detail"><strong>報告区分:</strong> '+escapeHtml(details.報告区分)+'</div>';
+if(details.jRCT番号)detailsHtml+='<div class="ai-detail"><strong>jRCT番号:</strong> '+escapeHtml(details.jRCT番号)+'</div>';
+if(details.起案番号)detailsHtml+='<div class="ai-detail"><strong>起案番号:</strong> '+escapeHtml(details.起案番号)+'</div>';
+if(details.研究責任者)detailsHtml+='<div class="ai-detail"><strong>研究責任者:</strong> '+escapeHtml(details.研究責任者)+'</div>';
+if(details.担当者)detailsHtml+='<div class="ai-detail"><strong>担当者:</strong> '+escapeHtml(details.担当者)+'</div>';
+if(details.締切日)detailsHtml+='<div class="ai-detail"><strong>締切日:</strong> '+escapeHtml(details.締切日)+'</div>';
+if(details.備考)detailsHtml+='<div class="ai-detail"><strong>備考:</strong> '+escapeHtml(details.備考)+'</div>';
+
+var procLabel=escapeHtml(result.procedure);
+resultArea.innerHTML='<div class="ai-result-card">'+
+'<div class="ai-result-header">'+
+'<span class="ai-badge">'+procLabel+'</span>'+
+'<span class="ai-confidence">信頼度: '+confidencePercent+'%</span>'+
+'</div>'+
+'<div class="ai-result-reason">'+escapeHtml(result.reason)+'</div>'+
+(detailsHtml?'<div class="ai-result-details">'+detailsHtml+'</div>':'')+
+'<div class="ai-result-actions">'+
+'<button class="ai-action-btn" onclick="AIJudge.nav(\''+procLabel+'\')">この手続きを開始する →</button>'+
+'</div></div>';
+resultArea.style.display='block';
+}
+
+function highlightProcedure(procedure){
+var buttons=document.querySelectorAll('.proc-btn');
+var map={'承認申請':0,'申請管理者報告':1,'公表管理者報告':2,'その他報告':3};
+var idx=map[procedure];
+buttons.forEach(function(btn,i){
+if(i===idx){btn.classList.add('highlighted');btn.classList.remove('dimmed');}
+else{btn.classList.remove('highlighted');btn.classList.add('dimmed');}
+});
+}
+
+function nav(procedure){
+var urls={
+'承認申請':'https://morikawa001.github.io/kanri_flow/approval.html',
+'申請管理者報告':'https://morikawa001.github.io/kanri_flow/apply_report.html',
+'公表管理者報告':'https://morikawa001.github.io/kanri_flow/publish_report.html',
+'その他報告':'https://morikawa001.github.io/kanri_flow/other_report.html'
+};
+var url=urls[procedure];
+if(url)window.location.href=url;
+}
+
+function showResult(type,message){
+var resultArea=document.getElementById('aiResultArea');
+if(!resultArea)return;
+var cls={loading:'ai-loading',warn:'ai-warn',error:'ai-error'}[type]||'ai-info';
+resultArea.innerHTML='<div class="ai-result-card '+cls+'">'+escapeHtml(message)+'</div>';
+resultArea.style.display='block';
+}
+
+function setLoading(loading){
+isLoading=loading;
+var btn=document.getElementById('aiJudgeBtn');
+if(btn){btn.disabled=loading;btn.textContent=loading?'判定中...':'✨ AIで判定する';}
+}
+
+function escapeHtml(str){
+if(!str)return'';
+var d=document.createElement('div');
+d.appendChild(document.createTextNode(str));
+return d.innerHTML;
+}
+
+return{setupUI:setupUI,nav:nav};
+})();
+
+AIJudge.setupUI();
+</script>
+</body>
+</html>

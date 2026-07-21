@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>承認申請 - 管理者報告フロー統合パネル</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+--bg:#f0f4ff;--surface:#ffffff;--surface-2:#f8faff;--surface-3:#e8f0fe;--border:#d0dff5;
+--text:#2d3748;--muted:#718096;--faint:#a0aec0;--inv:#ffffff;
+--primary:#6c63ff;--primary-2:#5a52d5;--primary-light:#e8e6ff;--primary-glow:rgba(108,99,255,.15);
+--success:#48bb78;--success-soft:#c6f6d5;--success-glow:rgba(72,187,120,.1);
+--warn:#ed8936;--warn-soft:#fefcbf;
+--error:#fc8181;--error-soft:#fed7d7;
+--blue:#4299e1;--blue-soft:#bee3f8;
+--robot-accent:#ff6b9d;--robot-accent-light:#fff0f6;
+--shadow-sm:0 2px 8px rgba(108,99,255,.08),0 4px 16px rgba(108,99,255,.04);--shadow-md:0 4px 20px rgba(108,99,255,.12),0 8px 32px rgba(108,99,255,.06);--shadow-lg:0 8px 40px rgba(108,99,255,.16);
+--r-sm:.75rem;--r-md:1rem;--r-lg:1.25rem;--r-xl:1.5rem;--r-2xl:2rem;--pill:9999px;
+--font:'Satoshi','Hiragino Sans','Yu Gothic',-apple-system,sans-serif;
+}
+[data-theme="dark"]{
+--bg:#1a1f36;--surface:#252b42;--surface-2:#2d3555;--surface-3:#364063;--border:#4a5578;
+--text:#e2e8f0;--muted:#a0aec0;--faint:#718096;--inv:#1a1f36;
+--primary:#9f7aea;--primary-2:#b794f4;--primary-light:#2d2555;--primary-glow:rgba(159,122,234,.2);
+--success:#68d391;--success-soft:#1c3a2a;--success-glow:rgba(104,211,145,.15);
+--warn:#f6ad55;--warn-soft:#4a3728;
+--error:#fc8181;--error-soft:#4a2828;
+--blue:#63b3ed;--blue-soft:#253341;
+--robot-accent:#ff6b9d;--robot-accent-light:#3d2535;
+--shadow-sm:0 2px 8px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-md:0 4px 20px rgba(0,0,0,.35),0 8px 32px rgba(0,0,0,.25);--shadow-lg:0 8px 40px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,input{font:inherit}
+button{cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--primary);color:var(--inv)}
+
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border)}
+.brand{display:flex;gap:.9rem;align-items:center}
+.brand svg{width:34px;height:34px;color:var(--primary);filter:drop-shadow(0 1px 2px var(--primary-glow))}
+.brand h1{font-size:1rem;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.brand p{font-size:.74rem;color:var(--muted);letter-spacing:.01em}
+.actions{display:flex;gap:.5rem;align-items:center}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1)}
+.icon-btn:hover{background:var(--surface-3);border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.ghost-btn{min-height:36px;padding:0 .85rem;font-size:.8rem;font-weight:600;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm);border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1)}
+.ghost-btn:hover{background:var(--surface-3);border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+
+.content-wrap{flex:1;padding:2rem 1.5rem;max-width:800px;width:100%;margin:0 auto}
+.page-hd{margin-bottom:2rem;animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
+.page-hd h2{font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+.page-hd p{color:var(--muted);font-size:.88rem;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow-sm);margin-bottom:1.5rem;animation:slideUp .5s cubic-bezier(.22,1,.36,1)}
+.card-hd{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.6rem}
+.card-hd h3{font-size:.92rem;font-weight:600}
+.card-bd{padding:1.1rem}
+.placeholder{padding:3rem 1.5rem;text-align:center;background:var(--surface-2);border:2px dashed var(--border);border-radius:var(--r-xl);animation:slideUp .6s cubic-bezier(.22,1,.36,1)}
+.placeholder h3{font-size:1.1rem;color:var(--muted);margin-bottom:.5rem}
+.placeholder p{font-size:.82rem;color:var(--faint);line-height:1.6}
+.placeholder .icon{font-size:2.5rem;margin-bottom:.8rem;opacity:.5}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.brand svg{animation:float 3s ease-in-out infinite}
+@media(max-width:560px){
+.content-wrap{padding:1.2rem .85rem}
+.page-hd h2{font-size:1.2rem}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="brand">
+<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+<rect x="8" y="12" width="32" height="28" rx="8" fill="currentColor" opacity=".15"/>
+<rect x="10" y="14" width="28" height="24" rx="6" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="18" cy="24" r="3" fill="currentColor"/>
+<circle cx="30" cy="24" r="3" fill="currentColor"/>
+<path d="M18 32h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<rect x="20" y="6" width="8" height="8" rx="2" fill="currentColor" opacity=".3"/>
+<circle cx="24" cy="6" r="3" fill="currentColor"/>
+</svg>
+<div>
+<h1>管理者報告フロー統合パネル</h1>
+<p>起案と管理者報告を切り替えて運用</p>
+</div>
+</div>
+<div class="actions">
+<button class="ghost-btn" onclick="location.href='https://morikawa001.github.io/kanri_flow/procedure.html'">← 手続き選択に戻る</button>
+<button class="icon-btn" id="guideBtn" aria-label="使い方ガイド" onclick="location.href='https://morikawa001.github.io/kanri_flow/guide.html'" title="使い方ガイド">📖</button>
+<button class="icon-btn" id="themeBtn" aria-label="テーマ切替">🌙</button>
+</div>
+</header>
+
+<div class="content-wrap">
+<div class="page-hd">
+<h2>✓ 承認申請</h2>
+<p>実施承認申請書の起案・承認手続きを行います。</p>
+</div>
+<div class="card">
+<div class="card-hd"><h3>承認申請手続き</h3></div>
+<div class="card-bd">
+<div class="placeholder">
+<div class="icon">📋</div>
+<h3>このページは準備中です</h3>
+<p>承認申請に関する手続きフローがここに配置されます。<br>必要に応じてページを編集してください。</p>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.getElementById('themeBtn').addEventListener('click',function(){
+var root=document.documentElement;
+var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+root.setAttribute('data-theme',next);
+this.textContent=next==='dark'?'☀️':'🌙';
+});
+</script>
+</body>
+</html>

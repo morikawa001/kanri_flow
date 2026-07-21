@@ -1,0 +1,3237 @@
+
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>管理者報告フロー統合パネル v0715_03</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+--bg:#f0f4ff;--surface:#ffffff;--surface-2:#f8faff;--surface-3:#e8f0fe;--border:#d0dff5;
+--text:#2d3748;--muted:#718096;--faint:#a0aec0;--inv:#ffffff;
+--primary:#6c63ff;--primary-2:#5a52d5;--primary-light:#e8e6ff;--primary-glow:rgba(108,99,255,.15);
+--success:#48bb78;--success-soft:#c6f6d5;--success-glow:rgba(72,187,120,.1);
+--warn:#ed8936;--warn-soft:#fefcbf;
+--error:#fc8181;--error-soft:#fed7d7;
+--blue:#4299e1;--blue-soft:#bee3f8;
+--robot-accent:#ff6b9d;--robot-accent-light:#fff0f6;
+--shadow-sm:0 2px 8px rgba(108,99,255,.08),0 4px 16px rgba(108,99,255,.04);--shadow-md:0 4px 20px rgba(108,99,255,.12),0 8px 32px rgba(108,99,255,.06);--shadow-lg:0 8px 40px rgba(108,99,255,.16);
+--r-sm:.75rem;--r-md:1rem;--r-lg:1.25rem;--r-xl:1.5rem;--r-2xl:2rem;--pill:9999px;
+--font:'Satoshi','Hiragino Sans','Yu Gothic',-apple-system,sans-serif;
+--flow-guide:#eef2ff;
+}
+[data-theme="dark"]{
+--bg:#1a1f36;--surface:#252b42;--surface-2:#2d3555;--surface-3:#364063;--border:#4a5578;
+--text:#e2e8f0;--muted:#a0aec0;--faint:#718096;--inv:#1a1f36;
+--primary:#9f7aea;--primary-2:#b794f4;--primary-light:#2d2555;--primary-glow:rgba(159,122,234,.2);
+--success:#68d391;--success-soft:#1c3a2a;--success-glow:rgba(104,211,145,.15);
+--warn:#f6ad55;--warn-soft:#4a3728;
+--error:#fc8181;--error-soft:#4a2828;
+--blue:#63b3ed;--blue-soft:#253341;
+--robot-accent:#ff6b9d;--robot-accent-light:#3d2535;
+--shadow-sm:0 2px 8px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-md:0 4px 20px rgba(0,0,0,.35),0 8px 32px rgba(0,0,0,.25);--shadow-lg:0 8px 40px rgba(0,0,0,.4);
+--flow-guide:#1e2547;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--primary);color:var(--inv)}
+.app{display:grid;grid-template-rows:auto auto 1fr;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border)}
+.brand{display:flex;gap:.9rem;align-items:center}
+.brand svg{width:34px;height:34px;color:var(--primary);filter:drop-shadow(0 1px 2px var(--primary-glow))}
+.brand h1{font-size:1rem;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.brand p{font-size:.74rem;color:var(--muted);letter-spacing:.01em}
+.actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.icon-btn,.chip-btn,.ghost-btn,.primary-btn{border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1)}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.chip-btn,.ghost-btn,.primary-btn{min-height:36px;padding:0 .85rem;font-size:.8rem;font-weight:600;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm)}
+.mode-group{display:flex;gap:0;border-radius:var(--pill);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)}
+.mode-group .chip-btn{border:none;border-radius:0;min-height:36px;padding:.45rem 1.1rem;font-size:.82rem;position:relative}
+.mode-group .chip-btn.active-mode{background:var(--primary);color:var(--inv);font-weight:700}
+.mode-group .chip-btn:not(.active-mode){background:var(--surface);color:var(--muted)}
+.mode-group .chip-btn:not(.active-mode):hover{background:var(--surface-3);color:var(--text)}
+.mode-group .chip-btn+.chip-btn{border-left:1px solid var(--border)}
+.chip-btn.active-mode{background:var(--primary);color:var(--inv);border-color:var(--primary);box-shadow:0 2px 8px var(--primary-glow)}
+.chip-btn:not(.active-mode):hover,.ghost-btn:hover,.icon-btn:hover{background:var(--surface-3);border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.chip-btn:not(.active-mode):active,.ghost-btn:active,.icon-btn:active{transform:translateY(0)}
+.primary-btn{background:var(--primary);border-color:var(--primary);color:var(--inv);box-shadow:0 2px 8px var(--primary-glow);font-weight:700}
+.primary-btn:hover{background:var(--primary-2);border-color:var(--primary-2);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
+.primary-btn:active{transform:translateY(0)}
+.headline{padding:1rem 1.5rem .35rem;position:relative}
+.headline::after{content:'';position:absolute;bottom:0;left:1.5rem;right:1.5rem;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.headline h2{font-size:1.2rem;line-height:1.25;margin-bottom:.2rem;letter-spacing:-.02em;font-weight:700}
+.headline p{color:var(--muted);font-size:.82rem;max-width:80ch;line-height:1.5}
+.flow-guide{display:flex;gap:0;align-items:center;padding:.6rem 1.5rem;background:var(--flow-guide);border-bottom:1px solid var(--border);font-size:.72rem;color:var(--muted);overflow-x:auto;white-space:nowrap}
+.flow-guide .flow-step{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .6rem;border-radius:var(--pill);transition:all .2s ease}
+.flow-guide .flow-step.current{background:var(--primary-light);color:var(--primary);font-weight:700}
+.flow-guide .flow-step.done{color:var(--success);font-weight:600}
+.flow-guide .flow-arrow{margin:0 .15rem;color:var(--faint);font-size:.65rem;flex:0 0 auto}
+
+.main{display:grid;grid-template-columns:1.3fr 1fr;gap:1.5rem;padding:0 1.5rem 1.5rem;align-items:start}
+.card,.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow-sm);transition:box-shadow .2s ease}
+.card:hover{box-shadow:var(--shadow-md)}
+.card-hd,.panel-hd{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.6rem}
+.card-hd h3,.panel-hd h3{font-size:.85rem;font-weight:600;letter-spacing:-.01em}
+.card-bd,.panel-bd{padding:.9rem 1.1rem 1rem}
+.hero-box{padding:1rem 1.1rem .9rem;background:linear-gradient(135deg,var(--primary-light),var(--surface-2) 80%);border-bottom:1px solid var(--border);display:flex;gap:.9rem;align-items:flex-start;border-radius:var(--r-xl) var(--r-xl) 0 0;position:relative;overflow:hidden}
+.hero-box::before{content:'';position:absolute;top:-50%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,var(--primary-glow),transparent 70%);pointer-events:none}
+.hero-num{width:2.2rem;height:2.2rem;border-radius:50%;background:var(--primary);color:var(--inv);display:grid;place-items:center;font-weight:700;flex:0 0 auto;font-size:.9rem;box-shadow:0 2px 8px var(--primary-glow);position:relative;z-index:1}
+.hero-box h3{font-size:1.05rem;line-height:1.2;margin-bottom:.2rem;font-weight:600}
+.hero-box p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.hero-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem;position:relative;z-index:1}
+.tag{display:inline-flex;align-items:center;gap:.3rem;height:24px;padding:0 .55rem;border-radius:var(--pill);font-size:.67rem;font-weight:600}
+.tag.primary{background:var(--primary-light);color:var(--primary)}
+.tag.success{background:var(--success-soft);color:var(--success)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.blue{background:var(--blue-soft);color:var(--blue)}
+.checklist{display:grid;gap:.5rem}
+.checkitem{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .8rem;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-lg);transition:all .2s ease}
+.checkitem:hover{border-color:var(--faint)}
+.checkitem.checked{background:var(--success-soft);border-color:var(--success)}
+.checkitem input{width:1.05rem;height:1.05rem;accent-color:var(--primary);margin-top:.15rem;flex:0 0 auto;cursor:pointer}
+.checkitem strong{display:block;font-size:.82rem;margin-bottom:.06rem;font-weight:600;line-height:1.3}
+.checkitem span{font-size:.73rem;color:var(--muted);line-height:1.4}
+.template-block .checklist{display:flex;flex-direction:column;gap:.4rem}
+.template-block .checkitem{padding:.45rem .55rem;gap:.4rem;font-size:.73rem;align-items:center}
+.template-block .checkitem>div{flex:1;min-width:0}
+.template-block .checkitem strong{font-size:.73rem;margin-bottom:0}
+.template-block .checkitem span{font-size:.67rem}
+.study-type-wrap{display:grid;gap:.7rem}
+.study-group{padding:.85rem;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-lg);transition:all .2s ease}
+.study-group.selected{background:var(--primary-light);border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.study-main{border:none;background:transparent;padding:0}
+.study-main.checked{background:transparent}
+.study-subgrid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.65rem;padding-top:.65rem;border-top:1px dashed var(--border)}
+.study-sub{background:var(--surface)}
+.study-single{margin:0}
+.section-title{font-size:.82rem;font-weight:600;color:var(--muted);margin:1rem 0 .5rem;letter-spacing:.02em;text-transform:uppercase}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem}
+.field label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.25rem;letter-spacing:.01em}
+.input,.select,.textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:var(--r-md);padding:.65rem .8rem;min-height:40px;transition:border-color .2s,box-shadow .2s;font-size:.88rem}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.textarea{min-height:88px;resize:vertical}
+.readonly{background:var(--primary-light);color:var(--primary);font-weight:600}
+.help{margin-top:.25rem;font-size:.72rem;color:var(--faint);line-height:1.4}
+.cta-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 1.1rem;background:var(--surface-3);border-top:1px solid var(--border);border-radius:0 0 var(--r-xl) var(--r-xl)}
+.cta-row .hint{font-size:.74rem;color:var(--muted)}
+.template-block{display:grid;gap:.7rem}
+.template-card{padding:.85rem .95rem;border-radius:var(--r-lg);background:var(--surface-2);border:1px solid var(--border);transition:all .2s ease}
+.template-card:hover{border-color:var(--faint)}
+.template-card h4{font-size:.82rem;margin-bottom:.35rem;font-weight:600}
+.mono{font-family:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;font-size:.74rem;white-space:pre-wrap;word-break:break-word;line-height:1.5;color:var(--muted)}
+.kpi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem}
+.kpi{padding:.6rem .65rem;background:var(--surface-2);border-radius:var(--r-md);border:1px solid var(--border);transition:all .2s ease;text-align:center}
+.kpi:hover{border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.kpi strong{display:block;font-size:1.05rem;line-height:1;margin-bottom:.1rem;font-weight:700;letter-spacing:-.02em}
+.kpi span{font-size:.65rem;color:var(--muted);font-weight:500}
+.map-list,.note-list,.file-list{display:grid;gap:.45rem}
+.map-item,.note,.file-row{padding:.65rem .7rem;border-radius:var(--r-md);background:var(--surface-2);border:1px solid transparent;font-size:.78rem;transition:all .2s ease}
+.map-item.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary);font-weight:600;box-shadow:0 0 0 1px var(--primary)}
+.map-item.done{background:var(--success-soft);color:var(--success)}
+.map-item:not(.active):not(.done):hover{background:var(--surface-3)}
+.file-row strong{display:block;font-size:.78rem;margin-bottom:.1rem;font-weight:600}
+.file-row span{font-size:.7rem;color:var(--muted)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.info{border:1px solid var(--border);background:var(--surface-2)}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 .5rem;border-radius:var(--pill);font-size:.68rem;font-weight:600;background:var(--surface-3);color:var(--muted);white-space:nowrap}
+.success-banner{padding:2.5rem 1.5rem;text-align:center;background:linear-gradient(135deg,var(--success-soft),var(--surface-2));border:1px solid var(--success);border-radius:var(--r-2xl);box-shadow:0 4px 20px var(--success-glow)}
+.success-banner h3{font-size:1.5rem;color:var(--success);margin:.5rem 0;font-weight:700}
+.small{font-size:.74rem;color:var(--muted)}
+code{background:var(--surface-3);padding:.1em .35em;border-radius:var(--r-sm);font-size:.82em;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+kbd{display:inline-block;padding:.15em .45em;font-size:.78em;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;background:var(--surface-3);border:1px solid var(--border);border-radius:var(--r-sm);box-shadow:0 1px 0 var(--border)}
+.row-pick{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem .75rem;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-lg);transition:all .2s ease;cursor:pointer}
+.row-pick:hover{border-color:var(--faint);background:var(--surface-3)}
+.row-pick.selected{background:var(--primary-light);border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.row-pick input[type="checkbox"]{width:1.05rem;height:1.05rem;accent-color:var(--primary);margin-top:.18rem;flex:0 0 auto;cursor:pointer}
+.row-pick-main{flex:1 1 auto;min-width:0}
+.row-pick-main strong{display:block;font-size:.8rem;margin-bottom:.1rem;font-weight:600}
+.row-pick-main span{display:block;font-size:.72rem;color:var(--muted);line-height:1.4}
+@media(max-width:1280px){.main{grid-template-columns:1.1fr 1fr}}
+@media(max-width:920px){
+.main{grid-template-columns:1fr}
+.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+.study-subgrid{grid-template-columns:1fr}
+.flow-guide{padding:.5rem .85rem;gap:.2rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.flow-guide .flow-step{scroll-snap-align:start;font-size:.68rem;padding:.3rem .5rem}
+.flow-guide .flow-arrow{font-size:.55rem;margin:0 .08rem}
+}
+@media(max-width:768px){
+.grid-4{grid-template-columns:1fr 1fr}
+.assist-dialog{max-width:95%;max-height:90vh}
+.assist-dialog-inner{padding:1.2rem 1.1rem 1rem}
+}
+.assist-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;animation:fadeIn .25s ease}
+.assist-dialog{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);box-shadow:var(--shadow-lg);max-width:520px;width:92%;max-height:85vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+.assist-dialog-inner{padding:1.5rem 1.5rem 1.2rem}
+.assist-icon{width:3rem;height:3rem;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:.8rem}
+.assist-dialog h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;line-height:1.3}
+.assist-dialog p{font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:.6rem}
+.assist-dialog ul{margin:.4rem 0 .7rem;padding-left:1.2rem;font-size:.82rem;color:var(--text);line-height:1.7}
+.assist-dialog .assist-btn-row{display:flex;gap:.6rem;justify-content:flex-end;flex-wrap:wrap;margin-top:.9rem;padding-top:.8rem;border-top:1px solid var(--border)}
+.assist-highlight{border-color:var(--error)!important;box-shadow:0 0 0 3px rgba(181,52,130,.15)!important;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(181,52,130,.15)}50%{box-shadow:0 0 0 5px rgba(181,52,130,.25)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.brand svg{animation:float 3s ease-in-out infinite}
+
+@media(max-width:560px){
+.topbar,.headline,.main{padding-left:.85rem;padding-right:.85rem}
+.brand h1{font-size:.88rem}
+.mode-group .chip-btn{padding:.4rem .8rem;font-size:.76rem}
+.cta-row{flex-direction:column;gap:.7rem;padding:.8rem}
+.cta-row .hint{font-align:center}
+.cta-row [data-cta]>div{width:100%;display:flex;flex-direction:column;gap:.5rem}
+.cta-row [data-cta]>div .ghost-btn,.cta-row [data-cta]>div .primary-btn{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center}
+.icon-btn{width:44px;height:44px}
+.chip-btn,.ghost-btn,.primary-btn{min-height:44px}
+.checkitem{padding:.7rem .75rem}
+.row-pick{padding:.65rem .7rem}
+.template-card{padding:.75rem .8rem}
+.card-hd,.panel-hd{padding:.8rem 1rem}
+.card-bd,.panel-bd{padding:.8rem 1rem}
+.hero-box{padding:.85rem 1rem .8rem}
+.kpi-row{grid-template-columns:1fr}
+.grid-4{grid-template-columns:1fr 1fr}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/pizzip@3.1.4/dist/pizzip.min.js"></script>
+<script src="https://unpkg.com/docxtemplater@3.44.0/build/docxtemplater.js"></script>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+<div class="brand">
+<svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+<rect x="8" y="12" width="32" height="28" rx="8" fill="currentColor" opacity=".15"/>
+<rect x="10" y="14" width="28" height="24" rx="6" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="18" cy="24" r="3" fill="currentColor"/>
+<circle cx="30" cy="24" r="3" fill="currentColor"/>
+<path d="M18 32h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<rect x="20" y="6" width="8" height="8" rx="2" fill="currentColor" opacity=".3"/>
+<circle cx="24" cy="6" r="3" fill="currentColor"/>
+</svg>
+<div>
+<h1>管理者報告フロー統合パネル</h1>
+<p>起案と管理者報告を切り替えて運用</p>
+</div>
+</div>
+<div class="actions">
+<div class="mode-group">
+<button class="chip-btn active-mode" id="modeFrontBtn">起案</button>
+<button class="chip-btn" id="modeBackBtn">管理者報告</button>
+</div>
+<button class="ghost-btn" id="navToggleBtn">ナビON</button>
+<button class="ghost-btn" id="resetBtn" onclick="location.href='https://morikawa001.github.io/kanri_flow/procedure.html'">← 手続き選択に戻る</button>
+<button class="icon-btn" id="guideBtn" aria-label="使い方ガイド" onclick="location.href='https://morikawa001.github.io/kanri_flow/guide.html'" title="使い方ガイド">📖</button>
+<button class="icon-btn" id="themeBtn" aria-label="テーマ切替">🌙</button>
+</div>
+</header>
+<section class="headline">
+<h2 id="headlineTitle">起案フロー：入口入力からフォルダZIP・台帳CSV作成まで</h2>
+<p id="headlineText">研究課題名・研究責任者などの共通情報を最初に入力し、複数依頼は1件ずつ管理します。台帳CSVを読み込むと途中から再開できます。</p>
+</section>
+<section class="flow-guide" id="flowGuide"></section>
+<main class="main">
+<section class="card" id="mainStage"></section>
+<section class="card" id="templateStage"></section>
+</main>
+</div>
+<script>
+const stages = [
+{
+id:'intake',num:1,title:'案件受付・入口入力',
+desc:'管理メールから研究課題名・研究責任者・研究区分を入力します。JRCTページの貼り付けまたは台帳CSVの読み込みで自動入力でき、後工程の起案文・報告案・メール案にそのまま反映されます。',
+tags:['共通情報の入力','CSVで再開可能','JRCT自動入力'],
+checks:[
+['管理メールを確認した','「JRCTに公開されました、管理者報告をお願い」を確認する'],
+['研究課題名・略称を入力した','起案文・報告案・メール件名に共通して使う情報'],
+['研究責任者を入力した','所属・職名・氏名を最大2名分、報告メールの宛先に利用する'],
+['研究区分を選択した','特定 or 非特定臨床研究。未承認・適応外・資金提供も該当する場合チェック'],
+],
+notes:[
+['warn','入口で入力した情報は以降の全ステップで自動利用されるため、省略すると後工程で再入力が必要になる。'],
+['info','台帳CSVを読み込むと、過去の案件情報がすべて復元され、続きから再開できる。']
+],
+fields:[
+{id:'mailSubject',label:'研究略称',type:'text',placeholder:'例：STANDARD-SG'},
+{id:'studyTitle',label:'研究課題名',type:'text',placeholder:'例：〇〇に関する特定臨床研究'},
+{id:'jrctNo',label:'jRCT番号',type:'text',placeholder:'例：jRCTs042250017'},
+{id:'managerAffil1',label:'研究責任者1 所属機関',type:'text',placeholder:'例：○○病院'},
+{id:'managerDept1',label:'研究責任者1 所属部署',type:'text',placeholder:'例：呼吸器内科'},
+{id:'managerTitle1',label:'研究責任者1 職名',type:'text',placeholder:'例：病院長'},
+{id:'managerName1',label:'研究責任者1 氏名',type:'text',placeholder:'例：〇〇 〇〇'},
+{id:'managerAffil2',label:'研究責任者2 所属機関',type:'text',placeholder:'例：○○大学'},
+{id:'managerDept2',label:'研究責任者2 所属部署',type:'text',placeholder:'例：呼吸器内科'},
+{id:'managerTitle2',label:'研究責任者2 職名',type:'text',placeholder:'例：教授'},
+{id:'managerName2',label:'研究責任者2 氏名',type:'text',placeholder:'例：〇〇 〇〇'},
+{id:'draftDate',label:'起案日',type:'text',placeholder:'yyyy/mm/dd（自動入力されます）'},
+{id:'drafterName',label:'起案・報告案の報告者',type:'text',placeholder:'例：森川 〇〇'},
+{id:'drafterDept',label:'所属・部門名',type:'text',placeholder:'例：臨床研究支援部門',options:['臨床研究管理・調整室']},
+],
+next:'次：フォルダ名を確認する',
+},
+{
+id:'folders',num:2,title:'フォルダ名を確認',
+desc:'ステップ1の依頼行ごとに、申請フォルダ・CSCC側公表フォルダ・管理者側公表フォルダの3種類が自動生成されます。起案番号をそのまま使うため手入力は不要です。',
+tags:['フォルダ名自動生成','3種類を確認','手入力不要'],
+checks:[
+['申請フォルダ名を確認した','例：特2025-17_2-1_申請'],
+['CSCC側公表フォルダ名を確認した','例：特2025-17_2-2_公表(cscc)'],
+['管理者側公表フォルダ名を確認した','例：特2025-17_2-2_公表'],
+],
+notes:[
+['info','管理者側フォルダの実パス（NAS上の場所）は、ステップ6で最終確定する。'],
+['warn','フォルダ名はステップ1の起案番号から自動生成されるため、ここでの修正は不要。']
+],
+next:'次：起案文・報告案を作成する',
+},
+{
+id:'drafts',num:3,title:'起案文・報告案・ZIP出力',
+desc:'起案文テンプレート(.docx)と報告案テンプレート(.docx)に差し込みを行い、起案文・報告案・台帳CSV・フォルダZIPを生成します。生成されたZIPをダウンロードしてNASに展開してください。',
+tags:['docx差し込み','CSV・ZIP生成','NASへ展開'],
+checks:[
+['起案文の報告事項欄を確認した','初回公表に変更・軽微変更が混在する場合の整理'],
+['詳細欄の文面を確認した','jRCT URLまたは別紙のとおり'],
+['報告案に同内容が反映されることを確認した','起案文ベースで自動反映'],
+['フォルダZIPをダウンロードした','申請・CSCC側・管理者側の3フォルダを一括取得'],
+['ZIPをNAS上の所定位置に展開した','ZIPを解凍してフォルダ配置を完了する'],
+],
+notes:[
+['warn','複数依頼がある場合は、主たる報告事項を明確にし、付随事項を吸収する整理が必要。'],
+['info','ブラウザからNASへ直接書き込めないため、ZIPダウンロード→NAS側で展開する流れになっている。'],
+['info','台帳CSVはZIP内のCSCC側公表フォルダに保存される。'],
+],
+next:'次：ファイル名を最終確認',
+},
+{
+id:'files',num:4,title:'ファイル名を最終確認',
+desc:'各フォルダに格納するファイルの命名規則を一覧で確認します。命名ルールに従ってファイルをリネームし、必須資料のチェックリストで最終確認を行います。',
+tags:['命名規則','表記ゆれ防止','チェックリスト'],
+checks:[
+['起案ファイル名を確認した','例：_00_起案'],
+['管理者報告ファイル名を確認した','例：_01_管理者報告'],
+['必須添付ファイルを確認した','各依頼行の必要書類を1件ずつ確認'],
+['表記ゆれを確認した','一覧どおりに命名されているか最終確認'],
+],
+notes:[
+['info','フォルダ作成は済んでいるため、格納するファイル名の最終確認ステップ。'],
+],
+next:'起案完了 → 決裁後に作業再開',
+},
+{
+id:'work',num:5,title:'CSCC側フォルダで作業',
+desc:'決裁が完了したら、台帳CSVを読み込んで案件を再開します。CSCC側公表フォルダに、起案の鏡スキャン・報告案PDF化・必要資料を格納します。',
+tags:['台帳CSVで再開','資料格納','PDF化'],
+checks:[
+['台帳CSVを読み込んだ','研究課題名・研究責任者・依頼行が自動復元される'],
+['起案の鏡をスキャン保存した','公表_00→公表_01などの変更を反映'],
+['報告案の確認日を決裁日に合わせた','PDF化前に記入'],
+['必要なPDF・Word資料を格納した','CSCC側フォルダへ収納'],
+],
+notes:[['info','台帳CSVから研究課題名・研究責任者・研究区分が自動復元されるため、再入力不要。']],
+next:'次：管理者側フォルダに格納',
+},
+{
+id:'path',num:6,title:'管理者側フォルダに格納・パス確定',
+desc:'管理者側公表フォルダに資料を格納し、NAS上の保存パスを確定します。管理者報告メール案をテキストファイルとして保存し、CSCC側にショートカットを作成します。',
+tags:['パス確定','メール案保存','ショートカット作成'],
+checks:[
+['管理者側公表フォルダへ格納した','対になるCSCC側フォルダと合わせて配置'],
+['保存パスを取得した','メール本文に貼り付けるパスを確定'],
+['管理者報告メール案を保存した','件名・本文をテキストファイルとして保存'],
+['ショートカットをCSCC側に作成した','対になる関係がわかるようにする'],
+],
+notes:[
+['warn','保存パスは入口では確定できず、このステップで最終確定する。'],
+['info','メール案テキストは後から確認・再送する際の記録にもなる。']
+],
+fields:[],
+next:'次：管理者報告メールを送信',
+},
+{
+id:'send',num:7,title:'管理者報告メールを送信',
+desc:'管理者報告メールの宛先・件名・本文を最終確認し、NAS保存パスを差し込んで送信します。送信後、更新済み台帳CSVをダウンロードして保存します。',
+tags:['最終確認','送信','台帳更新'],
+checks:[
+['宛先が管理者になっていることを確認した','入口で入力済み（または台帳CSVから復元）'],
+['件名・研究課題名を確認した','入口情報が反映済み'],
+['NAS保存パスを貼り付けた','最後の未確定項目を差し込み'],
+['内容確認後に送信した','管理者報告メールを送信'],
+],
+notes:[['info','台帳CSVにも研究課題名・研究責任者が引き続き記録され、次回の再開時に復元される。']],
+fields:[],
+next:'管理者報告完了',
+}
+];
+
+let current = 0;
+let done = Array(stages.length).fill(false);
+let checks = {};
+stages.forEach(s=>s.checks.forEach((c,idx)=>checks[`${s.id}_${idx}`]=false));
+
+const state = {
+  appMode:'front',
+  navEnabled:false,
+  loadedLedgerRows:[],
+  loadedLedgerHeaders:[],
+  selectedLedgerIndexes:[],
+  requestRows:[{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}],
+  managerPaths:[],
+  assistSeen:{},
+  stepEnterTimestamp:null,
+  stepDurations:{},
+  lastRenderedStageId:null
+};
+let folderSelections = {};
+
+function h(str){return String(str||'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));}
+function getValue(id){const el=document.getElementById(id);return el?el.value.trim():(state[id]??'').toString().trim();}
+function setStateFromDom(){
+  document.querySelectorAll('[data-bind]').forEach(el=>{
+    state[el.dataset.bind] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  document.querySelectorAll('[data-preset-free]').forEach(el=>{
+    const sel=document.querySelector(`[data-preset-select="${el.dataset.presetFree}"]`);
+    if(sel && sel.value!=='__free') return;
+    state[el.dataset.presetFree]=el.value;
+  });
+}
+
+function incrementLastBranch(no, keepLast=false){
+  const val = String(no || '').trim();
+  if(!val) return '';
+  const m = val.match(/^(.*[_-])(\d+)-(\d+)$/);
+  if(m){
+    const prefix = m[1], first = m[2], last = parseInt(m[3],10);
+    return `${prefix}${first}-${keepLast ? last : last+1}`;
+  }
+  const m2 = val.match(/^(.*[_-])(\d+)$/);
+  if(m2){
+    const prefix = m2[1], last = parseInt(m2[2],10);
+    return prefix + String(keepLast ? last : last+1);
+  }
+  return val;
+}
+
+function requestRowsData(){
+  return state.requestRows && state.requestRows.length
+    ? state.requestRows
+    : [{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}];
+}
+function setRequestRow(idx,key,val){
+  if(!state.requestRows || !state.requestRows.length)
+    state.requestRows=[{type:'初回公表',base:'特2025-17_2-1',date:'',url:''}];
+  if(!state.requestRows[idx]) state.requestRows[idx]={type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''};
+  state.requestRows[idx][key]=val;
+}
+function requestOutputNo(r){
+  return incrementLastBranch(r.base || '特2025-17_2-1', r.type==='軽微変更') || (r.base || '特2025-17_2-1');
+}
+
+function branchSuffix(no){
+  const s=String(no||'').trim();
+  const matches=[...s.matchAll(/(\d{4})[-_]/g)];
+  for(let k=matches.length-1;k>=0;k--){
+    const m=matches[k];
+    const before=s[m.index-1];
+    const tail=s.substring(m.index+m[0].length);
+    if(/[_-\d]/.test(before??'')&&/\d/.test(tail)){
+      const yearEnd=m.index+m[1].length;
+      return s.substring(yearEnd+1);
+    }
+  }
+  const i=s.lastIndexOf('_');
+  return i>=0?s.substring(i+1):s;
+}
+
+function datePrefix(){
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_`;
+}
+function todayYmd(){
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+}
+function todayFormatted(){
+  const d=new Date();
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function normalizeToYmdSlash(v){
+  const s=String(v||'').trim();
+  if(!s) return '';
+  const m=s.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
+  if(m) return `${m[1]}/${m[2].padStart(2,'0')}/${m[3].padStart(2,'0')}`;
+  const m2=s.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if(m2) return `${m2[1]}/${m2[2]}/${m2[3]}`;
+  return s;
+}
+
+function combinedDraftReportPrefix(){
+  const rows=requestRowsData();
+  if(rows.length<=1) return requestOutputNo(rows[0]||{type:'初回公表',base:'特2025-17_2-1'});
+  const first=requestOutputNo(rows[0]);
+  const matches=[...first.matchAll(/(\d{4})[-_]/g)];
+  let basePrefix=first.substring(0,first.lastIndexOf('_'));
+  for(let k=matches.length-1;k>=0;k--){
+    const m=matches[k];
+    const before=first[m.index-1];
+    const tail=first.substring(m.index+m[0].length);
+    if(/[_-\d]/.test(before??'')&&/\d/.test(tail)){
+      basePrefix=first.substring(0,m.index+m[0].length-1);
+      break;
+    }
+  }
+  const branches=rows.map(r=>branchSuffix(requestOutputNo(r)));
+  const compact=branches.map((s,i)=>{
+    if(i===0) return s;
+    return s.replace(/^\d{4}[-_]/,'');
+  });
+  return basePrefix+'_'+compact.join('_');
+}
+
+function outputCategory(type){
+  const map = {
+    '軽微変更': '公表',
+    '変更': '公表',
+    '定期報告': '定期報告',
+    '一部公表': '公表',
+    '初回公表': '公表',
+    '不適合報告': '不適合',
+    '疾病等報告（医療機器）': '医療機器'
+  };
+  return map[type] || type;
+}
+
+function rowFromLedger(r){
+  return {
+    type:r['報告区分']||'初回公表',
+    base:r['元の起案番号']||r['起案番号']||'特2025-17_2-1',
+    date:r['公表日']||r['報告期間']||'',
+    url:r['jRCT URL']||'',
+    facilityType:r['自施設他施設']||'',
+    facilityDetail:r['報告詳細']||''
+  };
+}
+function selectedLedgerRows(){
+  const idxs=(state.selectedLedgerIndexes||[]).filter(i=>state.loadedLedgerRows[i]);
+  return idxs.map(i=>state.loadedLedgerRows[i]);
+}
+function syncRequestRowsFromSelectedLedger(){
+  const rows=selectedLedgerRows();
+  if(rows.length){
+    state.requestRows=rows.map(rowFromLedger);
+    state.managerPaths=rows.map(r=>r['管理者側フォルダパス']||'');
+    const first=rows[0];
+    if(first['研究課題名']) state.studyTitle=first['研究課題名'];
+    if(first['担当者']) state.drafterName=first['担当者'];
+    if(first['所属・部門名']) state.drafterDept=first['所属・部門名'];
+    if(first['研究略称']) state.mailSubject=first['研究略称'];
+    if(first['jRCT番号']) state.jrctNo=first['jRCT番号'];
+    const studyCat=first['研究区分']||'';
+    state.studyTypeNonspecific=studyCat.includes('非特定');
+    state.studyTypeSpecific=studyCat.includes('特定') && !studyCat.startsWith('非特定');
+    const subCat=first['サブ分類']||'';
+    state.studyTypeUnapproved=subCat.includes('未承認適応外');
+    state.studyTypeFunding=subCat.includes('資金提供');
+    if(first['研究責任者1氏名']) state.managerName1=first['研究責任者1氏名'];
+    else if(first['研究責任者']) state.managerName1=first['研究責任者'];
+    if(first['研究責任者1所属']) state.managerAffil1=first['研究責任者1所属'];
+    if(first['研究責任者1部署']) state.managerDept1=first['研究責任者1部署'];
+    if(first['研究責任者1職名']) state.managerTitle1=first['研究責任者1職名'];
+    if(first['研究責任者2氏名']) state.managerName2=first['研究責任者2氏名'];
+    if(first['研究責任者2所属']) state.managerAffil2=first['研究責任者2所属'];
+    if(first['研究責任者2部署']) state.managerDept2=first['研究責任者2部署'];
+    if(first['研究責任者2職名']) state.managerTitle2=first['研究責任者2職名'];
+    rows.forEach((r,i)=>{
+      if(r['自施設他施設'] && state.requestRows[i]) state.requestRows[i].facilityType = r['自施設他施設'];
+    });
+  }
+}
+function ledgerSelectionSummary(){
+  const count=(state.selectedLedgerIndexes||[]).length;
+  return count ? `${count}件選択中` : '未選択';
+}
+
+function reportType(){return requestRowsData()[0]?.type || '初回公表';}
+function effectiveReportNo(){return requestOutputNo(requestRowsData()[0] || {type:'初回公表',base:'特2025-17_2-1'});}
+
+
+const NAMING_MASTER = [
+  { category:'初回公表', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-2','公表','1.0','管理者報告'], required:true, ext:'docx' },
+  { category:'初回公表', source:'管理者承認様式_実施承認申請', pattern:['特XXXX-XX-XXXX-X-2','公表','3.0','管理者承認'], required:true, ext:'docx' },
+  { category:'初回公表', source:'jRCT_URL', pattern:['特XXXX-XX-XXXX-X-2','公表','2.0','jRCT','URL'], required:true, ext:'xlsx' },
+
+  { category:'変更', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-2','公表','1.0','管理者報告'], required:true, ext:'docx' },
+  { category:'変更', source:'管理者報告様式_実施承認申請', pattern:['特XXXX-XX-XXXX-X-2','公表','3.0','管理者承認'], required:true, ext:'docx' },
+  { category:'変更', source:'様式第二（第四十一条関係）_実施計画事項変更届書', pattern:['特XXXX-XX-XXXX-X-2','公表','4.0','実施計画変更届'], required:true, ext:'pdf' },
+
+  { category:'軽微変更', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-1','公表','1.0','管理者報告'], required:true, ext:'docx' },
+  { category:'軽微変更', source:'統一書式6_軽微変更通知（収受印あり）', pattern:['特XXXX-XX-XXXX-X-1','公表','6.0','軽微通知書（収受印あり）'], required:false, ext:'pdf' },
+  { category:'軽微変更', source:'統一書式6_軽微変更通知', pattern:['特XXXX-XX-XXXX-X-1','公表','6.0','軽微通知書'], required:true, ext:'pdf' },
+  { category:'軽微変更', source:'様式第三（第四十三条関係）_実施計画事項軽微変更届書', pattern:['特XXXX-XX-XXXX-X-1','公表','7.0','軽微変更届'], required:true, ext:'pdf' },
+  { category:'軽微変更', source:'様式第一（第三十九条関係）_実施計画', pattern:['特XXXX-XX-XXXX-X-1','公表','10.0','実施計画'], required:false, ext:'pdf' },
+  { category:'軽微変更', source:'必要時補足資料', pattern:['特XXXX-XX-XXXX-X-1','公表','10.0','補足資料_XXXX'], required:false, ext:'pdf' },
+
+  { category:'定期報告', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-2','定期報告','1.0','管理者報告'], required:true, ext:'docx' },
+  { category:'定期報告', source:'統一書式4_審査結果通知書', pattern:['特XXXX-XX-XXXX-X-2','定期報告','2.0','審査結果'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'統一書式5_定期報告書', pattern:['特XXXX-XX-XXXX-X-2','定期報告','3.0','統一5報告書'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'別紙様式3_定期報告書', pattern:['特XXXX-XX-XXXX-X-2','定期報告','4.0','別紙3報告書'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'定期報告書_別紙', pattern:['特XXXX-XX-XXXX-X-2','定期報告','6.0','定期報告別紙'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'定期モニタリングレポート', pattern:['特XXXX-XX-XXXX-X-2','定期報告','7.0','モニ報'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'COI医薬品', pattern:['特XXXX-XX-XXXX-X-2','定期報告','9.0','COI医薬品'], required:true, ext:'pdf' },
+  { category:'定期報告', source:'様式E　利益相反管理計画', pattern:['特XXXX-XX-XXXX-X-2','定期報告','11.0','COI様式E_組織名'], required:true, ext:'pdf' },
+
+  { category:'一部公表', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-2','公表','1.0','管理者報告'], required:true, ext:'docx' },
+
+  { category:'不適合報告', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-2','不適合','1.0','管理者報告'], required:true, ext:'docx' },
+  { category:'不適合報告', source:'統一書式4_審査結果通知書', pattern:['特XXXX-XX-XXXX-X-2','不適合','2.0','審査結果'], required:true, ext:'pdf' },
+  { category:'不適合報告', source:'統一書式7_重大な不適合報告書', pattern:['特XXXX-XX-XXXX-X-2','不適合','3.0','不適合報告書（重大な）'], required:true, ext:'pdf' },
+
+  { category:'疾病等報告（医療機器）', source:'管理者報告様式_臨床研究法における管理者への報告書', pattern:['特XXXX-XX-XXXX-X-X','公表','1','管理者報告'], required:true, ext:'docx' },
+  { category:'疾病等報告（医療機器）', source:'統一書式4_審査結果通知書', pattern:['特XXXX-XX-XXXX-X-X','医療機器','2','審査結果'], required:true, ext:'pdf' },
+  { category:'疾病等報告（医療機器）', source:'統一書式9_医療機器の疾病等又は不具合報告書（第1報）', pattern:['特XXXX-XX-XXXX-X-X','医療機器','3','不具合報告書'], required:true, ext:'pdf' },
+  { category:'疾病等報告（医療機器）', source:'詳細記載用書式_疾病等に関連すると思われる発現時の原疾患、合併症、既往歴、並びに過去の処置', pattern:['特XXXX-XX-XXXX-X-X','医療機器','4','詳細','登録番号XX'], required:false, ext:'pdf' },
+  { category:'疾病等報告（医療機器）', source:'登録番号XXの検査結果等', pattern:['特XXXX-XX-XXXX-X-X','医療機器','6','検査'], required:false, ext:'pdf' }
+];
+
+function namingRulesForRow(r){
+  const category = r?.type || '初回公表';
+  const items = NAMING_MASTER.filter(x => x.category === category);
+  const prefix = String(requestOutputNo(r) || '').trim();
+
+  if(!items.length){
+    return {
+      category,
+      html:'<div class="help">この公表区分の命名規則はまだ未登録です。</div>',
+      requiredCount:0
+    };
+  }
+
+  const seqLabel = v => {
+    const n = String(v || '').trim();
+    const m = n.match(/^(\d+)(?:\.\d+)?$/);
+    return m ? m[1].padStart(2, '0') : n;
+  };
+
+  const html = items.map((it, idx) => {
+    const parts = [...it.pattern];
+    if(parts.length >= 3){
+      parts[2] = seqLabel(parts[2]);
+    }
+    const filename = [prefix, ...parts.slice(1)].join('_') + '.' + (it.ext || 'pdf');
+
+    return `
+      <div class="template-card">
+        <h4>${idx + 1}. ${h(it.source)}</h4>
+        <div class="mono">
+必須：${it.required ? 'はい' : '状況により'}（${h(category)}）
+想定ファイル名：
+${h(filename)}
+        </div>
+        <div style="margin-top:.4rem;display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button type="button" class="ghost-btn" data-copy-filename data-filename="${h(filename.replace(/\.[^.]+$/,''))}">ファイル名をコピー</button>
+          <label class="row-pick" style="padding:.3rem .5rem;">
+            <input type="checkbox" data-file-attached="${idx}">
+            <span class="small">NASに添付済み</span>
+          </label>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return {
+    category,
+    html,
+    requiredCount: items.filter(x => x.required).length
+  };
+}
+
+function copyToClipboard(text){
+  if(navigator.clipboard&&window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  return Promise.resolve();
+}
+
+function bindDraftsExtraEvents(){
+  document.querySelectorAll('[data-folder-sel]').forEach(el=>{
+    el.addEventListener('change', ()=>{
+      const [idxStr, key] = el.dataset.folderSel.split('-');
+      setFolderSelection(+idxStr, key, el.checked);
+    });
+  });
+
+  document.querySelectorAll('[data-copy-filename]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filenameLine = btn.dataset.filename || '';
+      if(!filenameLine) return;
+      copyToClipboard(filenameLine).then(()=>{
+        const orig = btn.textContent;
+        btn.textContent = 'コピーしました!';
+        btn.style.color = 'var(--success)';
+        setTimeout(()=>{ btn.textContent = orig; btn.style.color = ''; }, 1500);
+      }).catch(()=>{});
+    });
+  });
+
+  document.getElementById('copyAllNaming')?.addEventListener('click', () => {
+    const names = Array.from(document.querySelectorAll('[data-copy-filename]'))
+      .map(btn => btn.dataset.filename || '')
+      .filter(Boolean)
+      .join('\n');
+    if(!names) return;
+    copyToClipboard(names).catch(()=>{});
+  });
+}
+
+function bindStandardInputs(scope){
+  (scope || document).querySelectorAll('[data-bind]').forEach(el=>{
+    if(el.type==='checkbox'){
+      el.addEventListener('change',()=>{
+        state[el.dataset.bind]=el.checked;
+        renderTemplate();
+      });
+    } else {
+      el.addEventListener('input',()=>{
+        state[el.dataset.bind]=el.value;
+      });
+      el.addEventListener('change',()=>{
+        state[el.dataset.bind]=el.value;
+        renderAll();
+      });
+    }
+  });
+}
+
+function renderLedgerRowsHtml(){
+  if(!state.loadedLedgerRows.length) return '<div class="help">台帳CSVを読み込むとここに対象行が表示されます。</div>';
+  return `
+    <div style="display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:.7rem">
+      <button type="button" class="ghost-btn" id="selectAllLedgerBtn">すべて選択</button>
+      <button type="button" class="ghost-btn" id="clearLedgerBtn">選択解除</button>
+    </div>
+    <div style="display:grid;gap:.6rem">${state.loadedLedgerRows.map((r,i)=>`
+      <label class="row-pick ${(state.selectedLedgerIndexes||[]).includes(i)?'selected':''}">
+        <input type="checkbox" data-ledger-pick="${i}" ${((state.selectedLedgerIndexes||[]).includes(i))?'checked':''}>
+        <div class="row-pick-main">
+          <strong>${h(r['起案番号']||r['元の起案番号']||'番号なし')} / ${h(r['報告区分']||'')}</strong>
+          <span>研究課題名：${h(r['研究課題名']||'')}</span>
+          <span>研究責任者：${h(r['研究責任者']||'')}</span>
+        </div>
+      </label>`).join('')}</div>`;
+}
+
+function bindLedgerSelectionEvents(){
+  document.querySelectorAll('[data-ledger-pick]').forEach(el=>{
+    el.addEventListener('change',()=>{
+      toggleLedgerRowSelection(+el.dataset.ledgerPick, el.checked);
+      renderAll();
+    });
+  });
+  document.getElementById('selectAllLedgerBtn')?.addEventListener('click', selectAllLedgerRows);
+  document.getElementById('clearLedgerBtn')?.addEventListener('click', clearLedgerRowSelection);
+}
+
+function folderSetFor(r){
+  const no = requestOutputNo(r);
+  const outType = outputCategory(r.type);
+  const applyNo = no.replace(/_(\d+)-(\d+)$/,(_,a,b)=>`_${a}-${Math.max(1,parseInt(b,10)-1)}`);
+  return {
+    no,
+    apply: `${applyNo}_${outType}_申請`,
+    cscc: `${no}_${outType}(cscc)`,
+    manager: `${no}_${outType}`
+  };
+}
+
+function getFolderSelection(rowIdx, key){
+  const k = `${rowIdx}_${key}`;
+  if(folderSelections[k] === undefined) return true;
+  return !!folderSelections[k];
+}
+
+function setFolderSelection(rowIdx, key, checked){
+  folderSelections[`${rowIdx}_${key}`] = !!checked;
+}
+
+function buildManagerDisplay(){
+  const managers=[1,2].map(n=>{
+    const parts=[getValue(`managerAffil${n}`),getValue(`managerDept${n}`),getValue(`managerTitle${n}`),getValue(`managerName${n}`)].filter(Boolean);
+    return parts.join(' ');
+  }).filter(Boolean);
+  return managers.join('／');
+}
+
+function primaryManager(){
+  const affil=getValue('managerAffil1')||'所属';
+  const dept=getValue('managerDept1')||'';
+  const title=getValue('managerTitle1')||'職名';
+  const name=getValue('managerName1')||'氏名';
+  return {affil,dept,title,name};
+}
+function emailAddresses(){
+  const m1=primaryManager();
+  const lines=[`${m1.affil}\n${m1.dept} ${m1.title} ${m1.name} 先生`];
+  const affil2=getValue('managerAffil2'), dept2=getValue('managerDept2'), title2=getValue('managerTitle2'), name2=getValue('managerName2');
+  if(affil2||title2||name2) lines.push(`${affil2||''}\n${[dept2,title2,name2].filter(Boolean).join(' ')} 先生`);
+  return lines.join('\n\n');
+}
+function studyCategoryLabel(){
+  const specific = !!state.studyTypeSpecific;
+  const nonspecific = !!state.studyTypeNonspecific;
+  const opts = [state.studyTypeUnapproved ? '未承認・適応外' : '', state.studyTypeFunding ? '資金提供' : ''].filter(Boolean);
+  if(specific && nonspecific) return `特定臨床研究・非特定臨床研究${opts.length ? '（'+opts.join('・')+'）' : ''}`;
+  if(specific) return `特定臨床研究${opts.length ? '（'+opts.join('・')+'）' : ''}`;
+  if(nonspecific) return '非特定臨床研究';
+  return '';
+}
+
+function autoEmailDraft(){
+  const title=getValue('mailSubject')||'【研究略称】';
+  const rows=requestRowsData();
+  const paths=state.managerPaths||[];
+  const details=rows.map((r,i)=>`・${requestOutputNo(r)}_公表（${r.date||'jRCT 公表日未入力'}）\n「NAS」内保存場所：${paths[i]||'（決裁後に確定する管理者側フォルダパス）'}`).join('\n\n');
+  const drafter=getValue('drafterName')||'起案・報告案の報告者';
+  return {
+    subject:`【${title}】管理者「報告」：完了`,
+    body:`${emailAddresses()}\n\nいつもお世話になっております。\n臨床研究管理・調整室の${drafter}です。\n\n${title} 試験について、\n下記 管理者「報告」のお手続きが完了いたしました。\n書類は「NAS」に保存しております。\n\n${details}\n\n\n病院長の押印を省略しているため、紙書類のお渡しはございません。\nどうぞよろしくお願いいたします。\n\n※NASにアクセスするにはユーザー登録が必要です。\n（パスワード一覧表（エクセル）を未提出の方はお声がけください）\n※そのほかご不明な点があれば、お声がけください。\n\n************************************************\n　静岡県立静岡がんセンター\n　臨床研究支援センター 臨床研究管理・調整室\n　〒411-8777 静岡県駿東郡長泉町下長窪1007\n　E-mail: jimukanri@scchr.jp　（担当：${drafter}）\n************************************************`
+  };
+}
+function emailDraft(){
+  const auto=autoEmailDraft();
+  if(state.mailTouched){
+    return {subject:state.mailSubjectEdit||auto.subject,body:state.mailBodyEdit||auto.body};
+  }
+  state.mailSubjectEdit=auto.subject;
+  state.mailBodyEdit=auto.body;
+  return {subject:state.mailSubjectEdit,body:state.mailBodyEdit};
+}
+function resetMailEdits(){
+  state.mailSubjectEdit='';
+  state.mailBodyEdit='';
+  state.mailTouched=false;
+}
+
+function initMailEdits(){
+  emailDraft();
+}
+
+function combinedMailFileName(){
+  const rows=requestRowsData();
+  const base=rows.length ? requestOutputNo(rows[0]) : '特2025-17_2-2';
+  return `${base}_複数起案_管理者報告メール案.txt`;
+}
+
+function parseCsvRobust(text){
+  const clean=String(text||'').replace(/^\uFEFF/,'');
+  const out=[];let row=[],cell='',inQ=false;
+  for(let i=0;i<clean.length;i++){
+    const ch=clean[i];
+    if(ch==='\"'){
+      if(inQ && clean[i+1]==='\"'){cell+='\"';i++;}
+      else inQ=!inQ;
+    }else if(ch===',' && !inQ){
+      row.push(cell);cell='';
+    }else if((ch==='\n'||ch==='\r') && !inQ){
+      if(ch==='\r' && clean[i+1]==='\n') i++;
+      row.push(cell);out.push(row);row=[];cell='';
+    }else cell+=ch;
+  }
+  if(cell.length||row.length){row.push(cell);out.push(row);}
+  const lines=out.filter(r=>r.some(v=>String(v).trim()!==''));
+  if(!lines.length) return {headers:[],rows:[]};
+  const headers=lines[0].map(v=>String(v).trim());
+  const rows=lines.slice(1).map(cols=>{
+    const obj={};headers.forEach((h,i)=>obj[h]=cols[i]??'');return obj;
+  });
+  return {headers,rows};
+}
+function csvEscape(v){return '\"'+String(v??'').replace(/\"/g,'\"\"')+'\"';}
+function csvFromRequests(){
+  const rows=requestRowsData();
+  const header=['起案日','元の起案番号','起案番号','報告区分','担当者','所属・部門名','ステータス','公表日','報告期間','jRCT URL','jRCT番号','研究課題名','研究責任者','研究区分','サブ分類','研究略称','研究責任者1所属','研究責任者1部署','研究責任者1職名','研究責任者1氏名','研究責任者2氏名','研究責任者2所属','研究責任者2部署','研究責任者2職名','管理者報告メール送信日','管理者側フォルダパス','自施設他施設','報告詳細','step1(秒)','step2(秒)','step3(秒)','step4(秒)','step5(秒)','step6(秒)','step7(秒)'];
+  const drafter=getValue('drafterName')||'';
+  const studyTitle=getValue('studyTitle')||'';
+  const managerName=buildManagerDisplay()||'';
+  const status='起案中';
+  const studyTypeSpecific=!!state.studyTypeSpecific;
+  const studyTypeNonspecific=!!state.studyTypeNonspecific;
+  const studyTypeUnapproved=!!state.studyTypeUnapproved;
+  const studyTypeFunding=!!state.studyTypeFunding;
+  const studyTypeParts=[];
+  if(studyTypeSpecific) studyTypeParts.push('特定');
+  if(studyTypeNonspecific) studyTypeParts.push('非特定');
+  const studyCategory=studyTypeParts.join('・');
+  const subParts=[];
+  if(studyTypeUnapproved) subParts.push('未承認適応外');
+  if(studyTypeFunding) subParts.push('資金提供');
+  const subCategory=subParts.join('・');
+  const mailSubject=getValue('mailSubject')||'';
+  const paths=state.managerPaths||[];
+  const draftDate=state.draftDate||todayFormatted();
+  const body=rows.map((r,idx)=>[
+    draftDate,r.base||'',requestOutputNo(r),r.type,drafter,getValue('drafterDept')||'',status,r.type==='定期報告'?'':r.date||'',r.type==='定期報告'?r.date||'':'',r.url||'',getValue('jrctNo')||'',studyTitle,managerName,
+    studyCategory,subCategory,mailSubject,
+    getValue('managerAffil1')||'',getValue('managerDept1')||'',getValue('managerTitle1')||'',getValue('managerName1')||'',
+    getValue('managerName2')||'',getValue('managerAffil2')||'',getValue('managerDept2')||'',getValue('managerTitle2')||'',
+    state.sendDate||'',paths[idx]||'',r.facilityType||'',r.facilityDetail||'',
+    state.stepDurations['intake']||0,state.stepDurations['folders']||0,state.stepDurations['drafts']||0,state.stepDurations['files']||0,state.stepDurations['work']||0,state.stepDurations['path']||0,state.stepDurations['send']||0
+  ].map(csvEscape).join(',')).join('\n');
+  return header.map(csvEscape).join(',')+'\n'+body;
+}
+function ledgerCsvFileName(){
+  const rows=requestRowsData();
+  const r=rows[0]||{type:'初回公表'};
+  const outType=outputCategory(r.type);
+  return `${datePrefix()}${combinedDraftReportPrefix()}_${outType}_01_台帳.csv`;
+}
+function downloadCsvFromRequests(){
+  const csv=csvFromRequests();
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=ledgerCsvFileName();
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  fileStatuses.csv='✅ ひな型CSVをダウンロードしました。';
+  renderTemplate();
+}
+function handleCsvLoadFromFile(ev){
+  const file=ev.target.files && ev.target.files[0];
+  if(!file){fileStatuses.csv='ファイルが選択されていません。';renderTemplate();return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=parseCsvRobust(String(e.target.result||''));
+      if(!parsed.rows.length){fileStatuses.csv='CSVに有効な行がありません。';renderTemplate();return;}
+      state.requestRows=parsed.rows.map(r=>({
+        type:r['報告区分']||'初回公表',
+        base:r['元の起案番号']||r['起案番号']||'特2025-17_2-1',
+        date:r['公表日']||r['報告期間']||'',
+        url:r['jRCT URL']||'',
+        facilityType:r['自施設他施設']||'',
+        facilityDetail:r['報告詳細']||''
+      }));
+      const first=parsed.rows[0];
+      if(first['研究課題名']) state.studyTitle=first['研究課題名'];
+      if(first['担当者']) state.drafterName=first['担当者'];
+      if(first['所属・部門名']) state.drafterDept=first['所属・部門名'];
+      if(first['研究略称']) state.mailSubject=first['研究略称'];
+      if(first['jRCT番号']) state.jrctNo=first['jRCT番号'];
+      const studyCat=first['研究区分']||'';
+      state.studyTypeNonspecific=studyCat.includes('非特定');
+      state.studyTypeSpecific=studyCat.includes('特定') && !studyCat.startsWith('非特定');
+      const subCat=first['サブ分類']||'';
+      state.studyTypeUnapproved=subCat.includes('未承認適応外');
+      state.studyTypeFunding=subCat.includes('資金提供');
+      if(first['研究責任者1氏名']) state.managerName1=first['研究責任者1氏名'];
+      else if(first['研究責任者']) state.managerName1=first['研究責任者'];
+      if(first['研究責任者1所属']) state.managerAffil1=first['研究責任者1所属'];
+      if(first['研究責任者1部署']) state.managerDept1=first['研究責任者1部署'];
+      if(first['研究責任者1職名']) state.managerTitle1=first['研究責任者1職名'];
+      if(first['研究責任者2氏名']) state.managerName2=first['研究責任者2氏名'];
+      if(first['研究責任者2所属']) state.managerAffil2=first['研究責任者2所属'];
+      if(first['研究責任者2部署']) state.managerDept2=first['研究責任者2部署'];
+    if(first['研究責任者2職名']) state.managerTitle2=first['研究責任者2職名'];
+    if(first['起案日']) state.draftDate=normalizeToYmdSlash(first['起案日']);
+      if(first['管理者報告メール送信日']) state.sendDate=first['管理者報告メール送信日'];
+      if(first['起案日']) state.draftDate=normalizeToYmdSlash(first['起案日']);
+      state.managerPaths=parsed.rows.map(r=>r['管理者側フォルダパス']||'');
+      const cnt=parsed.rows.length;
+      const msg='\u2705 '+cnt+'件の依頼行を読み込み、研究課題情報・研究責任者・研究区分を復元しました。';
+      fileStatuses.csv=msg;
+      const s1=document.getElementById('csvStatusStep1');
+      if(s1){s1.textContent=msg;s1.style.color='var(--success)';}
+      renderAll();
+    }catch(err){fileStatuses.csv='CSV読み込みに失敗しました：'+err.message;renderTemplate();}
+  };
+  reader.readAsText(file);
+}
+function handleLedgerLoadForBack(ev){
+  const file=ev.target.files && ev.target.files[0];
+  if(!file){fileStatuses.csvStep5='ファイルが選択されていません。';renderTemplate();return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=parseCsvRobust(String(e.target.result||''));
+      if(!parsed.rows.length){fileStatuses.csvStep5='CSVに有効な行がありません。';renderTemplate();return;}
+      state.loadedLedgerHeaders=parsed.headers;
+      state.loadedLedgerRows=parsed.rows;
+      state.selectedLedgerIndexes=parsed.rows.map((_,i)=>i);
+      state.managerPaths=parsed.rows.map(r=>r['管理者側フォルダパス']||'');
+      syncRequestRowsFromSelectedLedger();
+      fileStatuses.csvStep5='✅ 台帳CSVを読み込みました。対象行を選択してください。';
+      renderAll();
+    }catch(err){fileStatuses.csvStep5='CSV読み込みに失敗しました：'+err.message;renderTemplate();}
+  };
+  reader.readAsText(file);
+}
+function toggleLedgerRowSelection(idx,checked){
+  const set=new Set(state.selectedLedgerIndexes||[]);
+  if(checked) set.add(idx);
+  else set.delete(idx);
+  state.selectedLedgerIndexes=[...set].sort((a,b)=>a-b);
+  syncRequestRowsFromSelectedLedger();
+}
+function selectAllLedgerRows(){
+  state.selectedLedgerIndexes=state.loadedLedgerRows.map((_,i)=>i);
+  syncRequestRowsFromSelectedLedger();
+  renderAll();
+}
+function clearLedgerRowSelection(){
+  state.selectedLedgerIndexes=[];
+  state.requestRows=[{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}];
+  renderAll();
+}
+function ledgerCsvForDownload(){
+  const headers=state.loadedLedgerHeaders.length
+    ? [...state.loadedLedgerHeaders]
+    : ['起案日','起案番号','報告区分','担当者','ステータス','公表日','jRCT URL','元の起案番号','研究課題名','研究責任者'];
+  if(!headers.includes('起案日')) headers.unshift('起案日');
+  if(!headers.includes('研究課題名')) headers.push('研究課題名');
+  if(!headers.includes('研究責任者')) headers.push('研究責任者');
+  if(!headers.includes('ステータス')) headers.push('ステータス');
+  if(!headers.includes('管理者報告メール送信日')) headers.push('管理者報告メール送信日');
+  if(!headers.includes('管理者側フォルダパス')) headers.push('管理者側フォルダパス');
+  if(!headers.includes('元の起案番号')) headers.push('元の起案番号');
+  if(!headers.includes('担当者')) headers.push('担当者');
+  if(!headers.includes('研究区分')) headers.push('研究区分');
+  if(!headers.includes('サブ分類')) headers.push('サブ分類');
+  if(!headers.includes('研究略称')) headers.push('研究略称');
+  if(!headers.includes('研究責任者1所属')) headers.push('研究責任者1所属');
+  if(!headers.includes('研究責任者1部署')) headers.push('研究責任者1部署');
+  if(!headers.includes('研究責任者1職名')) headers.push('研究責任者1職名');
+  if(!headers.includes('研究責任者1氏名')) headers.push('研究責任者1氏名');
+  if(!headers.includes('研究責任者2氏名')) headers.push('研究責任者2氏名');
+  if(!headers.includes('研究責任者2所属')) headers.push('研究責任者2所属');
+  if(!headers.includes('研究責任者2部署')) headers.push('研究責任者2部署');
+  if(!headers.includes('研究責任者2職名')) headers.push('研究責任者2職名');
+  if(!headers.includes('jRCT番号')) headers.push('jRCT番号');
+  if(!headers.includes('所属・部門名')) headers.push('所属・部門名');
+  if(!headers.includes('公表日')) headers.push('公表日');
+  if(!headers.includes('報告期間')) headers.push('報告期間');
+  if(!headers.includes('自施設他施設')) headers.push('自施設他施設');
+  if(!headers.includes('報告詳細')) headers.push('報告詳細');
+  if(!headers.includes('step1(秒)')) headers.push('step1(秒)');
+  if(!headers.includes('step2(秒)')) headers.push('step2(秒)');
+  if(!headers.includes('step3(秒)')) headers.push('step3(秒)');
+  if(!headers.includes('step4(秒)')) headers.push('step4(秒)');
+  if(!headers.includes('step5(秒)')) headers.push('step5(秒)');
+  if(!headers.includes('step6(秒)')) headers.push('step6(秒)');
+  if(!headers.includes('step7(秒)')) headers.push('step7(秒)');
+
+  const sendDate=getValue('sendDate')||'';
+  const draftDate=state.draftDate||todayFormatted();
+  const paths=state.managerPaths||[];
+  const studyTitle=getValue('studyTitle')||'';
+  const managerName=buildManagerDisplay()||'';
+  const drafter=getValue('drafterName')||'';
+  const mailSubject=getValue('mailSubject')||'';
+  const studyTypeSpecific=!!state.studyTypeSpecific;
+  const studyTypeNonspecific=!!state.studyTypeNonspecific;
+  const studyTypeUnapproved=!!state.studyTypeUnapproved;
+  const studyTypeFunding=!!state.studyTypeFunding;
+  const studyTypeParts=[];
+  if(studyTypeSpecific) studyTypeParts.push('特定');
+  if(studyTypeNonspecific) studyTypeParts.push('非特定');
+  const studyCategory=studyTypeParts.join('・');
+  const subParts=[];
+  if(studyTypeUnapproved) subParts.push('未承認適応外');
+  if(studyTypeFunding) subParts.push('資金提供');
+  const subCategory=subParts.join('・');
+  const targetIndexes=new Set((state.selectedLedgerIndexes||[]));
+  const hasLoaded=state.loadedLedgerRows.length>0;
+
+  const baseRows=hasLoaded ? state.loadedLedgerRows.map(r=>({...r})) : requestRowsData().map(r=>({
+    '起案番号':requestOutputNo(r),
+    '報告区分':r.type,
+    '公表日':r.type==='定期報告'?'':r.date||'',
+    '報告期間':r.type==='定期報告'?r.date||'':'',
+    'jRCT URL':r.url||'',
+    '元の起案番号':r.base||'',
+    '研究課題名':studyTitle,
+    '研究責任者':managerName
+  }));
+  if(hasLoaded){
+    baseRows.forEach(r=>{
+      const type=r['報告区分']||'';
+      if(type==='定期報告'){
+        if(!r['報告期間']&&r['公表日']){r['報告期間']=r['公表日'];r['公表日']='';}
+      }else{
+        if(!r['公表日']&&r['報告期間']){r['公表日']=r['報告期間'];r['報告期間']='';}
+      }
+    });
+  }
+
+  const rows=baseRows.map((r,idx)=>{
+    const obj={...r};
+    if(!obj['起案日']) obj['起案日']=draftDate;
+    if(!obj['研究課題名']) obj['研究課題名']=studyTitle;
+    if(!obj['研究責任者']) obj['研究責任者']=managerName;
+    if(!obj['担当者']) obj['担当者']=drafter;
+    if(!obj['研究区分']) obj['研究区分']=studyCategory;
+    if(!obj['サブ分類']) obj['サブ分類']=subCategory;
+    if(!obj['研究略称']) obj['研究略称']=mailSubject;
+    if(!obj['研究責任者1氏名']) obj['研究責任者1氏名']=getValue('managerName1')||'';
+    if(!obj['研究責任者1所属']) obj['研究責任者1所属']=getValue('managerAffil1')||'';
+    if(!obj['研究責任者1部署']) obj['研究責任者1部署']=getValue('managerDept1')||'';
+    if(!obj['研究責任者1職名']) obj['研究責任者1職名']=getValue('managerTitle1')||'';
+    if(!obj['研究責任者2氏名']) obj['研究責任者2氏名']=getValue('managerName2')||'';
+    if(!obj['研究責任者2所属']) obj['研究責任者2所属']=getValue('managerAffil2')||'';
+    if(!obj['研究責任者2部署']) obj['研究責任者2部署']=getValue('managerDept2')||'';
+    if(!obj['研究責任者2職名']) obj['研究責任者2職名']=getValue('managerTitle2')||'';
+    if(!obj['jRCT番号']) obj['jRCT番号']=getValue('jrctNo')||'';
+    if(!obj['所属・部門名']) obj['所属・部門名']=getValue('drafterDept')||'';
+    if(!hasLoaded || targetIndexes.has(idx)){
+      obj['ステータス']='送信済';
+      obj['管理者報告メール送信日']=sendDate;
+      obj['管理者側フォルダパス']=paths[idx]||'';
+      if(!obj['元の起案番号']) obj['元の起案番号']=obj['起案番号'] || '';
+    }
+    obj['step1(秒)']=state.stepDurations['intake']||0;
+    obj['step2(秒)']=state.stepDurations['folders']||0;
+    obj['step3(秒)']=state.stepDurations['drafts']||0;
+    obj['step4(秒)']=state.stepDurations['files']||0;
+    obj['step5(秒)']=state.stepDurations['work']||0;
+    obj['step6(秒)']=state.stepDurations['path']||0;
+    obj['step7(秒)']=state.stepDurations['send']||0;
+    if(!obj['自施設他施設']) obj['自施設他施設'] = requestRowsData()[idx]?.facilityType || '';
+    if(!obj['報告詳細']) obj['報告詳細'] = requestRowsData()[idx]?.facilityDetail || '';
+    return obj;
+  });
+  const body=rows.map(r=>headers.map(hd=>csvEscape(r[hd]||'')).join(',')).join('\n');
+  return headers.map(csvEscape).join(',')+'\n'+body;
+}
+function downloadUpdatedLedgerCsv(){
+  const csv=ledgerCsvForDownload();
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=datePrefix()+combinedDraftReportPrefix()+'_管理者報告_進捗台帳_更新済み.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  fileStatuses.csvStep7='✅ 更新済み台帳CSVをダウンロードしました。';
+  renderTemplate();
+}
+
+
+let templateDocxBuffer = null;
+let templateDocxName = '';
+let reportTemplateDocxBuffer = null;
+let reportTemplateDocxName = '';
+let fileStatuses = {};
+
+
+function handleReportTemplateDocxLoad(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file){
+    fileStatuses.reportDocx='ファイルが選択されていません。';
+    const el=document.getElementById('reportDocxTemplateStatus');if(el) el.textContent=fileStatuses.reportDocx;
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    reportTemplateDocxBuffer = e.target.result;
+    reportTemplateDocxName = file.name || '報告案テンプレート.docx';
+    fileStatuses.reportDocx=`✅ ひな形（${reportTemplateDocxName}）を読み込みました。`;
+    const el=document.getElementById('reportDocxTemplateStatus');if(el) el.textContent=fileStatuses.reportDocx;
+  };
+  reader.onerror = () => {
+    fileStatuses.reportDocx='テンプレート読込に失敗しました。';
+    const el=document.getElementById('reportDocxTemplateStatus');if(el) el.textContent=fileStatuses.reportDocx;
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function mark(flag){
+  return flag ? '■' : '☐';
+}
+
+function reportDocxDataForRow(r){
+  const rows = requestRowsData();
+  const relatedRows = rows.length ? rows : (r ? [r] : []);
+  const today = currentDocxDateParts();
+
+  const firstRowOfType = (t) => relatedRows.find(x => x?.type === t) || null;
+  const initialRow = firstRowOfType('初回公表');
+  const changeRow = firstRowOfType('変更');
+  const minorRow = firstRowOfType('軽微変更');
+  const futekigouRow = firstRowOfType('不適合報告');
+  const mainResultNotifyRow = firstRowOfType('主要評価項目報告書等の通知');
+  const summaryPublishRow = firstRowOfType('主要評価項目報告書又は総括報告書の概要の公表');
+  const reviewOpinionRow = firstRowOfType('審査意見の報告');
+
+  const hasType = (t) => relatedRows.some(x => x?.type === t);
+
+  const isPeriodic = relatedRows.some(x => x?.type === '定期報告');
+  const isSpecific = !!state.studyTypeSpecific;
+  const isNonspecific = !!state.studyTypeNonspecific;
+  const isUnapproved = !!state.studyTypeUnapproved;
+  const isFunding = !!state.studyTypeFunding;
+
+  const todokedeGaiRow = firstRowOfType('届出外');
+  const isTodokedeGai = hasType('届出外');
+  const isDrugIssue = hasType('疾病等報告（医薬品）');
+  const isDeviceIssue = hasType('疾病等報告（医療機器）');
+  const isRegenIssue = hasType('疾病等報告（再生医療等製品）');
+  const hasIssue = isDrugIssue || isDeviceIssue || isRegenIssue;
+
+  const isFutekigou = hasType('不適合報告');
+  const isMainResultNotify = hasType('主要評価項目報告書等の通知');
+  const isSummaryPublish = hasType('主要評価項目報告書又は総括報告書の概要の公表');
+  const isReviewOpinion = hasType('審査意見の報告');
+  const isOther = hasType('その他');
+
+  return {
+    '所属': safeDocxText(getValue('managerAffil1') || ''),
+    '所属部署': safeDocxText(getValue('managerDept1') || ''),
+    '職名': safeDocxText(getValue('managerTitle1') || ''),
+    '氏名': safeDocxText(getValue('managerName1') || ''),
+    '研究題名': safeDocxText(getValue('studyTitle') || ''),
+    '作成年': safeDocxText(today.year),
+    '作成月': safeDocxText(today.month),
+    '作成日': safeDocxText(today.day),
+
+    '研究種別_特定': mark(isSpecific),
+    '特定内訳_未承認適応外': mark(isSpecific && isUnapproved),
+    '特定内訳_資金提供': mark(isSpecific && isFunding),
+    '研究種別_非特定': mark(isNonspecific),
+
+    '報告事項_実施計画公表': mark(!!initialRow || !!changeRow || !!minorRow),
+    '公表区分_新規': mark(!!initialRow),
+    '新規公表日': normalizeToYmdSlash(initialRow?.date || ''),
+    '新規URL': safeDocxText(initialRow?.url || ''),
+    '公表区分_変更': mark(!!changeRow || !!minorRow),
+    '変更公表日': normalizeToYmdSlash(changeRow?.date || ''),
+    '変更URL': safeDocxText(changeRow?.url || ''),
+    '公表区分_軽微': mark(!!minorRow),
+    '軽微公表日': normalizeToYmdSlash(minorRow?.date || ''),
+    '軽微URL': safeDocxText(minorRow?.url || ''),
+    '公表区分_届出外': mark(isTodokedeGai),
+    '届出外公表日': formatDateToJapanese(todokedeGaiRow?.date || ''),
+    '届出外URL': safeDocxText(todokedeGaiRow?.url || ''),
+
+    '報告事項_疾病等不具合': mark(hasIssue),
+    '疾病区分_医薬品': mark(isDrugIssue),
+    '疾病施設_医薬品_自施設': mark(isDrugIssue && relatedRows.some(x=>x?.type==='疾病等報告（医薬品）' && x?.facilityType==='自施設')),
+    '疾病施設_医薬品_他施設': mark(isDrugIssue && relatedRows.some(x=>x?.type==='疾病等報告（医薬品）' && x?.facilityType==='他施設')),
+    '疾病区分_医療機器': mark(isDeviceIssue),
+    '疾病施設_医療機器_自施設': mark(isDeviceIssue && relatedRows.some(x=>x?.type==='疾病等報告（医療機器）' && x?.facilityType==='自施設')),
+    '疾病施設_医療機器_他施設': mark(isDeviceIssue && relatedRows.some(x=>x?.type==='疾病等報告（医療機器）' && x?.facilityType==='他施設')),
+    '疾病区分_再生医療等製品': mark(isRegenIssue),
+    '疾病施設_再生_自施設': mark(isRegenIssue && relatedRows.some(x=>x?.type==='疾病等報告（再生医療等製品）' && x?.facilityType==='自施設')),
+    '疾病施設_再生_他施設': mark(isRegenIssue && relatedRows.some(x=>x?.type==='疾病等報告（再生医療等製品）' && x?.facilityType==='他施設')),
+    '疾病報告詳細': safeDocxText(relatedRows.filter(x=>x?.type && x.type.includes('疾病等')).map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細': safeDocxText(relatedRows.filter(x=>x?.type && x.type.includes('疾病等')).map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医薬品_自施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（医薬品）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医薬品_他施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（医薬品）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医療機器_自施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（医療機器）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医療機器_他施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（医療機器）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_再生_自施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（再生医療等製品）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_再生_他施設': safeDocxText(relatedRows.filter(x=>x?.type==='疾病等報告（再生医療等製品）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+
+    '報告事項_不適合': mark(isFutekigou),
+    '不適合_重大': mark(false),
+    '不適合公表日': formatDateToJapanese(futekigouRow?.date || ''),
+    '不適合URL': safeDocxText(futekigouRow?.url || ''),
+
+    '報告事項_主要評価通知': mark(isMainResultNotify),
+    '主要評価通知公表日': formatDateToJapanese(mainResultNotifyRow?.date || ''),
+    '主要評価通知URL': safeDocxText(mainResultNotifyRow?.url || ''),
+
+    '報告事項_概要公表': mark(isSummaryPublish),
+    '概要公表公表日': formatDateToJapanese(summaryPublishRow?.date || ''),
+    '概要公表URL': safeDocxText(summaryPublishRow?.url || ''),
+
+    '報告事項_審査意見': mark(isReviewOpinion),
+    '審査意見公表日': formatDateToJapanese(reviewOpinionRow?.date || ''),
+    '審査意見URL': safeDocxText(reviewOpinionRow?.url || ''),
+
+    '報告事項_定期': mark(isPeriodic),
+    '報告事項_その他': mark(isOther),
+
+    '定期報告_報告期間': safeDocxText((() => {
+      const periodicRow = relatedRows.find(x => x?.type === '定期報告');
+      if(!periodicRow || !periodicRow.date) return isPeriodic ? '' : '定期報告';
+      return `定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`;
+    })()),
+    '定期報告_報告期間_漢字': safeDocxText((() => {
+      const periodicRow = relatedRows.find(x => x?.type === '定期報告');
+      if(!periodicRow || !periodicRow.date) return isPeriodic ? '' : '定期報告';
+      return `定期報告（報告期間：${formatDateRangeToJapanese(periodicRow.date)}）`;
+    })()),
+
+    '報告事項_起案': safeDocxText((() => {
+      const hasPeriodic = relatedRows.some(x => x?.type === '定期報告');
+      const initialR = relatedRows.find(x => x?.type === '初回公表');
+      const changeR = relatedRows.find(x => x?.type === '変更');
+      const minorR = relatedRows.find(x => x?.type === '軽微変更');
+      const hasOther = !!(initialR || changeR || minorR);
+      const parts = [];
+      if(hasOther) {
+        const pairs = [['初回公表',initialR],['変更',changeR],['軽微変更',minorR]].filter(([_,row])=>row);
+        if(pairs.length) {
+          const maxW = Math.max(...pairs.map(([t])=>fullWidthWidth(t)));
+          parts.push('実施計画の公表（' + pairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${(v?.date||'').trim()}`).join('、') + '）');
+        }
+      }
+      if(hasPeriodic) {
+        const periodicRow = relatedRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`);
+        }
+      }
+      return parts.join('\n');
+    })()),
+
+    '報告事項_報告案': safeDocxText((() => {
+      const hasPeriodic = relatedRows.some(x => x?.type === '定期報告');
+      const initialR = relatedRows.find(x => x?.type === '初回公表');
+      const changeR = relatedRows.find(x => x?.type === '変更');
+      const minorR = relatedRows.find(x => x?.type === '軽微変更');
+      const hasOther = !!(initialR || changeR || minorR);
+      const parts = [];
+      if(hasOther) {
+        const pairs = [['初回公表',initialR],['変更',changeR],['軽微変更',minorR]].filter(([_,row])=>row);
+        if(pairs.length) {
+          const urlLines = pairs.map(([type,row])=>`${type}　${(row?.url||'').trim()}`).join('\n');
+          parts.push('jRCT URL          ' + urlLines);
+        }
+      }
+      if(hasPeriodic) {
+        const periodicRow = relatedRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToJapanese(periodicRow.date)}）`);
+        }
+      }
+      return parts.join('\n');
+    })()),
+
+    '報告事項': safeDocxText((() => {
+      const hasPeriodic = relatedRows.some(x => x?.type === '定期報告');
+      const hasIssue = relatedRows.some(x => x?.type && x.type.includes('疾病等'));
+      const pubPairs = [['初回公表',initialRow],['変更',changeRow],['軽微変更',minorRow]].filter(([_,row])=>row);
+      const parts = [];
+      if(pubPairs.length) {
+        const maxW = Math.max(...pubPairs.map(([t])=>fullWidthWidth(t)));
+        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${normalizeToYmdSlash(v?.date||'')}`).join('、') + '）');
+      }
+      if(hasPeriodic) {
+        const periodicRow = relatedRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`);
+        }
+      }
+      if(hasIssue) {
+        const issueRows = relatedRows.filter(x => x?.type && x.type.includes('疾病等'));
+        issueRows.forEach(row => {
+          const label = (row?.type || '').replace('疾病等報告（','').replace('）','');
+          const detail = row?.facilityDetail || '';
+          parts.push(`${label}の疾病等報告（${detail}）`);
+        });
+      }
+      return parts.join('\n');
+    })()),
+
+    '詳細内容': safeDocxText((() => {
+      const hasPeriodic = relatedRows.some(x => x?.type === '定期報告');
+      const hasIssue = relatedRows.some(x => x?.type && x.type.includes('疾病等'));
+      const pubPairs = [['初回公表',initialRow],['変更',changeRow],['軽微変更',minorRow]].filter(([_,row])=>row);
+      const parts = [];
+      if(pubPairs.length) {
+        const urlLines = pubPairs.map(([t,row])=>`${t}　${(row?.url||'').trim()}`).join('\n');
+        parts.push('jRCT URL          ' + urlLines);
+      }
+      if(hasPeriodic) {
+        parts.push('詳細な内容　　　別紙のとおり');
+      }
+      if(hasIssue) {
+        parts.push('詳細な内容　　　別紙のとおり');
+      }
+      return parts.join('\n');
+    })())
+  };
+}
+
+async function downloadReportDocxForRow(idx){
+  if(!reportTemplateDocxBuffer){
+    fileStatuses.reportDocx='先に報告案ひな形（.docx）を読み込んでください。';
+    renderTemplate();
+    return;
+  }
+  if(!ensureDocxLibReady()){
+    fileStatuses.reportDocx='docx差し込みライブラリの読み込みに失敗しました。';
+    renderTemplate();
+    return;
+  }
+  const rows = requestRowsData();
+  const r = rows[idx];
+  if(!r){
+    fileStatuses.reportDocx='対象の依頼行が見つかりません。';
+    renderTemplate();
+    return;
+  }
+  try{
+    const blob = renderDocxFromTemplate(reportTemplateDocxBuffer.slice(0), reportDocxDataForRow(r));
+    const outType = outputCategory(r.type);
+    downloadBlob(blob, `${combinedDraftReportPrefix()}_${outType}_02_報告案.docx`);
+    fileStatuses.reportDocx=`✅ 依頼${idx+1}の報告案docxを出力しました。`;
+    renderTemplate();
+  }catch(err){
+    fileStatuses.reportDocx='報告案docx出力に失敗しました：' + (err.message || err);
+    renderTemplate();
+  }
+}
+
+async function downloadCombinedReportDocx(){
+  if(!reportTemplateDocxBuffer){
+    fileStatuses.reportDocx='先に報告案ひな形（.docx）を読み込んでください。';
+    renderTemplate();
+    return;
+  }
+  if(!ensureDocxLibReady()){
+    fileStatuses.reportDocx='docx差し込みライブラリの読み込みに失敗しました。';
+    renderTemplate();
+    return;
+  }
+
+  const rows = requestRowsData();
+  const r = rows[0];
+  if(!r){
+    fileStatuses.reportDocx='対象の依頼行がありません。';
+    renderTemplate();
+    return;
+  }
+
+  try{
+    const blob = renderDocxFromTemplate(reportTemplateDocxBuffer.slice(0), reportDocxDataForRow(r));
+    const outType = outputCategory(r.type);
+    const fileName = `${combinedDraftReportPrefix()}_${outType}_02_報告案.docx`;
+    downloadBlob(blob, fileName);
+    fileStatuses.reportDocx='✅ 複数依頼をまとめた報告案docxを1枚出力しました。';
+    renderTemplate();
+  }catch(err){
+    fileStatuses.reportDocx='報告案docx出力に失敗しました：' + (err.message || err);
+    renderTemplate();
+  }
+}
+
+function handleTemplateDocxLoad(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file){
+    fileStatuses.docx='ファイルが選択されていません。';
+    const el=document.getElementById('docxTemplateStatus');if(el) el.textContent=fileStatuses.docx;
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    templateDocxBuffer = e.target.result;
+    templateDocxName = file.name || '起案テンプレート.docx';
+    fileStatuses.docx=`✅ ひな形（${templateDocxName}）を読み込みました。`;
+    const el=document.getElementById('docxTemplateStatus');if(el) el.textContent=fileStatuses.docx;
+  };
+  reader.onerror = () => {
+    fileStatuses.docx='テンプレート読込に失敗しました。';
+    const el=document.getElementById('docxTemplateStatus');if(el) el.textContent=fileStatuses.docx;
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function safeDocxText(v){
+  return String(v ?? '').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+}
+
+function formatDateToJapanese(v){
+  const s=String(v||'').trim();
+  if(!s) return '';
+  const m=s.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
+  if(!m) return s;
+  return `${m[1]}年${m[2].padStart(2,'0')}月${m[3].padStart(2,'0')}日`;
+}
+function formatDateRangeToJapanese(v){
+  const s=String(v||'').trim();
+  if(!s) return '';
+  const parts=s.split('～').map(x=>x.trim());
+  if(parts.length>=2){
+    return parts.map(p=>formatDateToJapanese(p)).join('～');
+  }
+  return formatDateToJapanese(s);
+}
+function formatDateRangeToSlash(v){
+  const s=String(v||'').trim();
+  if(!s) return '';
+  const parts=s.split('～').map(x=>x.trim());
+  if(parts.length>=2){
+    return parts.map(p=>{
+      const m=p.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
+      return m ? `${m[1]}/${m[2].padStart(2,'0')}/${m[3].padStart(2,'0')}` : p;
+    }).join('～');
+  }
+  const m=s.match(/(\d{4})[\/\-年](\d{1,2})[\/\-月](\d{1,2})/);
+  return m ? `${m[1]}/${m[2].padStart(2,'0')}/${m[3].padStart(2,'0')}` : s;
+}
+
+function joinDocxLines(values){
+  return safeDocxText(
+    values
+      .map(v => String(v ?? '').trim())
+      .filter(v => v !== '')
+      .join('\n')
+  );
+}
+
+function fullWidthWidth(str){
+  let w=0;
+  for(const ch of String(str)){
+    const c=ch.codePointAt(0);
+    if(c<=0x7F) w+=1;
+    else if(c<=0x2E7F) w+=1;
+    else if(c<=0x9FFF) w+=2;
+    else if(c<=0xF9FF) w+=2;
+    else if(c<=0xFEFF) w+=1;
+    else if(c<=0x1FFFF) w+=2;
+    else w+=1;
+  }
+  return w;
+}
+
+function padFullWidth(str, targetWidth){
+  const cur=fullWidthWidth(str);
+  if(cur>=targetWidth) return str;
+  return str + '　'.repeat(targetWidth-cur);
+}
+
+function alignedDocxLines(types, values){
+  const pairs=types.map((t,i)=>[String(t||'').trim(), String(values[i]||'').trim()]).filter(([t,v])=>t||v);
+  if(!pairs.length) return '';
+  const maxW=Math.max(...pairs.map(([t])=>fullWidthWidth(t)));
+  return pairs.map(([t,v])=>`${padFullWidth(t,maxW)}\t${v}`).join('\n');
+}
+
+function currentDocxDateParts(){
+  const src=state.draftDate||todayFormatted();
+  const m=String(src).match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if(m){
+    return{year:m[1],month:m[2].padStart(2,'0'),day:m[3].padStart(2,'0')};
+  }
+  const now=new Date();
+  return{year:String(now.getFullYear()),month:String(now.getMonth()+1).padStart(2,'0'),day:String(now.getDate()).padStart(2,'0')};
+}
+
+function docxDataForRow(r){
+  const today = currentDocxDateParts();
+  const rows = requestRowsData();
+  const targetRows = rows.length ? rows : (r ? [r] : []);
+  const firstRowOfType = (t) => targetRows.find(x => x?.type === t) || null;
+  const isPeriodic = targetRows.some(x => x?.type === '定期報告');
+
+  const initialRow = firstRowOfType('初回公表');
+  const changeRow = firstRowOfType('変更');
+  const minorRow = firstRowOfType('軽微変更');
+  const todokedeGaiRow = firstRowOfType('届出外');
+
+  const reportPairs = [
+    ['初回公表', initialRow],
+    ['変更', changeRow],
+    ['軽微変更', minorRow],
+    ['届出外', todokedeGaiRow]
+  ].filter(([_,row]) => row);
+
+  return {
+    '所属部門': safeDocxText(getValue('drafterDept') || ''),
+    '起案者名': safeDocxText(getValue('drafterName') || ''),
+    '所属': safeDocxText(getValue('managerAffil1') || ''),
+    '所属部署': safeDocxText(getValue('managerDept1') || ''),
+    '職名': safeDocxText(getValue('managerTitle1') || ''),
+    '氏名': safeDocxText(getValue('managerName1') || ''),
+    '研究題名': safeDocxText(getValue('studyTitle') || ''),
+
+    '報告区分': joinDocxLines(targetRows.map(x => x?.type || '')),
+
+    '公表日': joinDocxLines([
+      changeRow ? normalizeToYmdSlash(changeRow.date || '') : '',
+      minorRow ? normalizeToYmdSlash(minorRow.date || '') : '',
+      initialRow ? normalizeToYmdSlash(initialRow.date || '') : '',
+      todokedeGaiRow ? normalizeToYmdSlash(todokedeGaiRow.date || '') : ''
+    ]),
+
+    'jRCT URL': alignedDocxLines(
+      ['変更','軽微変更','初回公表','届出外'],
+      [changeRow?.url||'', minorRow?.url||'', initialRow?.url||'', todokedeGaiRow?.url||'']
+    ),
+
+    '報告事項一覧': safeDocxText((() => {
+      const pairs = reportPairs.map(([type,row]) => [type, (row?.date||'').trim()]).filter(([t,v])=>t||v);
+      if(!pairs.length) return '';
+      const maxW = Math.max(...pairs.map(([t])=>fullWidthWidth(t)));
+      return pairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${v}`).join('、');
+    })()),
+    'jRCT一覧': alignedDocxLines(
+      reportPairs.map(([type])=>type),
+      reportPairs.map(([_,row])=>(row?.url||'').trim())
+    ),
+
+    '変更公表日': normalizeToYmdSlash(changeRow?.date || ''),
+    '軽微変更公表日': normalizeToYmdSlash(minorRow?.date || ''),
+    '変更URL': safeDocxText(changeRow?.url || ''),
+    '軽微変更URL': safeDocxText(minorRow?.url || ''),
+
+    '届出外公表日': formatDateToJapanese(todokedeGaiRow?.date || ''),
+    '届出外URL': safeDocxText(todokedeGaiRow?.url || ''),
+
+    '定期報告_報告期間': safeDocxText((() => {
+      const periodicRow = targetRows.find(x => x?.type === '定期報告');
+      if(!periodicRow || !periodicRow.date) return isPeriodic ? '' : '定期報告';
+      return `定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`;
+    })()),
+    '定期報告_報告期間_漢字': safeDocxText((() => {
+      const periodicRow = targetRows.find(x => x?.type === '定期報告');
+      if(!periodicRow || !periodicRow.date) return isPeriodic ? '' : '定期報告';
+      return `定期報告（報告期間：${formatDateRangeToJapanese(periodicRow.date)}）`;
+    })()),
+
+    '報告事項_起案': safeDocxText((() => {
+      const hasPeriodic = targetRows.some(x => x?.type === '定期報告');
+      const hasOther = targetRows.some(x => ['初回公表','変更','軽微変更'].includes(x?.type));
+      const parts = [];
+      if(hasOther) {
+        const pairs = reportPairs.map(([type,row]) => [type, (row?.date||'').trim()]).filter(([t,v])=>t||v);
+        if(pairs.length) {
+          const maxW = Math.max(...pairs.map(([t])=>fullWidthWidth(t)));
+          parts.push('実施計画の公表（' + pairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${v}`).join('、') + '）');
+        }
+      }
+      if(hasPeriodic) {
+        const periodicRow = targetRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`);
+        }
+      }
+      return parts.join('\n');
+    })()),
+
+    '報告事項_報告案': safeDocxText((() => {
+      const hasPeriodic = targetRows.some(x => x?.type === '定期報告');
+      const hasOther = targetRows.some(x => ['初回公表','変更','軽微変更'].includes(x?.type));
+      const parts = [];
+      if(hasOther) {
+        const urlLines = alignedDocxLines(
+          reportPairs.map(([type])=>type),
+          reportPairs.map(([_,row])=>(row?.url||'').trim())
+        );
+        if(urlLines) parts.push('jRCT URL          ' + urlLines);
+      }
+      if(hasPeriodic) {
+        const periodicRow = targetRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToJapanese(periodicRow.date)}）`);
+        }
+      }
+      return parts.join('\n');
+    })()),
+
+    '報告事項': safeDocxText((() => {
+      const hasPeriodic = targetRows.some(x => x?.type === '定期報告');
+      const hasIssue = targetRows.some(x => x?.type && x.type.includes('疾病等'));
+      const pubPairs = [['初回公表',initialRow],['変更',changeRow],['軽微変更',minorRow]].filter(([_,row])=>row);
+      const parts = [];
+      if(pubPairs.length) {
+        const maxW = Math.max(...pubPairs.map(([t])=>fullWidthWidth(t)));
+        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${normalizeToYmdSlash(v?.date||'')}`).join('、') + '）');
+      }
+      if(hasPeriodic) {
+        const periodicRow = targetRows.find(x => x?.type === '定期報告');
+        if(periodicRow?.date) {
+          parts.push(`定期報告（報告期間：${formatDateRangeToSlash(periodicRow.date)}）`);
+        }
+      }
+      if(hasIssue) {
+        const issueRows = targetRows.filter(x => x?.type && x.type.includes('疾病等'));
+        issueRows.forEach(row => {
+          const label = (row?.type || '').replace('疾病等報告（','').replace('）','');
+          const detail = row?.facilityDetail || '';
+          parts.push(`${label}の疾病等報告（${detail}）`);
+        });
+      }
+      return parts.join('\n');
+    })()),
+
+    '詳細内容': safeDocxText((() => {
+      const hasPeriodic = targetRows.some(x => x?.type === '定期報告');
+      const hasIssue = targetRows.some(x => x?.type && x.type.includes('疾病等'));
+      const pubPairs = [['初回公表',initialRow],['変更',changeRow],['軽微変更',minorRow]].filter(([_,row])=>row);
+      const parts = [];
+      if(pubPairs.length) {
+        const urlLines = pubPairs.map(([t,row])=>`${t}　${(row?.url||'').trim()}`).join('\n');
+        parts.push('jRCT URL          ' + urlLines);
+      }
+      if(hasPeriodic) {
+        parts.push('詳細な内容　　　別紙のとおり');
+      }
+      if(hasIssue) {
+        parts.push('詳細な内容　　　別紙のとおり');
+      }
+      return parts.join('\n');
+    })()),
+
+    '報告詳細': safeDocxText(targetRows.filter(x=>x?.type && x.type.includes('疾病等')).map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医薬品_自施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（医薬品）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医薬品_他施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（医薬品）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医療機器_自施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（医療機器）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_医療機器_他施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（医療機器）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_再生_自施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（再生医療等製品）'&&x?.facilityType==='自施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+    '報告詳細_再生_他施設': safeDocxText(targetRows.filter(x=>x?.type==='疾病等報告（再生医療等製品）'&&x?.facilityType==='他施設').map(x=>x?.facilityDetail||'').filter(Boolean).join('／')),
+
+    '作成年': safeDocxText(today.year),
+    '作成月': safeDocxText(today.month),
+    '作成日': safeDocxText(today.day)
+  };
+}
+
+function ensureDocxLibReady(){
+  return typeof window.PizZip !== 'undefined' && typeof window.docxtemplater !== 'undefined';
+}
+
+function escapeRegex(str){
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+}
+
+function preprocessDocxForConditionals(buffer, data){
+  const zip = new PizZip(buffer);
+  const xmlPaths = Object.keys(zip.files).filter(f=>
+    /^word\/(document|header|footer)\d*\.xml$/.test(f)
+  );
+  const emptyKeys = Object.entries(data)
+    .filter(([k,v])=>v===''||v===null||v===undefined)
+    .map(([k])=>k);
+  emptyKeys.forEach(k => { data[k] = null; });
+  if(!emptyKeys.length) return buffer;
+
+  function isInsideWT(xml, pos){
+    const ltOpen=xml.lastIndexOf('<w:t',pos);
+    if(ltOpen===-1) return false;
+    const ltTagClose=xml.indexOf('>',ltOpen);
+    if(ltTagClose===-1||pos<ltTagClose+1) return false;
+    const ltEnd=xml.indexOf('</w:t>',ltTagClose);
+    if(ltEnd===-1) return false;
+    return pos<ltEnd;
+  }
+
+  const editsPerFile={};
+  xmlPaths.forEach(path=>{
+    const xml=zip.file(path).asText();
+    const inserts=[];
+    for(const key of emptyKeys){
+      const tag=`{{${key}}}`;
+      let pos=0;
+      while(pos<xml.length){
+        const tagIdx=xml.indexOf(tag,pos);
+        if(tagIdx===-1) break;
+        pos=tagIdx+tag.length;
+
+        const pOpen=xml.lastIndexOf('<w:p',tagIdx);
+        const pClose=xml.indexOf('</w:p>',tagIdx);
+        if(pOpen===-1||pClose===-1) continue;
+
+        let leftParenIdx=-1;
+        for(let i=tagIdx-1;i>=pOpen;i--){
+          if(xml[i]==='\uFF09') break;
+          if(xml[i]==='\uFF08'){leftParenIdx=i;break;}
+        }
+        let rightParenIdx=-1;
+        for(let i=tagIdx+tag.length;i<pClose+6;i++){
+          if(xml[i]==='\uFF08') break;
+          if(xml[i]==='\uFF09'){rightParenIdx=i;break;}
+        }
+
+        if(leftParenIdx!==-1 && isInsideWT(xml,leftParenIdx) &&
+           rightParenIdx!==-1 && isInsideWT(xml,rightParenIdx)){
+          inserts.push({pos:leftParenIdx, text:`{{#${key}}}`});
+          inserts.push({pos:rightParenIdx+1, text:`{{/${key}}}`});
+        }else{
+          const tOpen=xml.lastIndexOf('<w:t',tagIdx);
+          const tClose=xml.indexOf('>',tOpen);
+          const tEnd=xml.indexOf('</w:t>',tagIdx);
+          if(tOpen!==-1&&tClose!==-1&&tEnd!==-1){
+            inserts.push({pos:tClose+1, text:`{{#${key}}}`});
+            inserts.push({pos:tEnd, text:`{{/${key}}}`});
+          }
+        }
+      }
+    }
+    if(inserts.length) editsPerFile[path]=inserts;
+  });
+
+  if(!Object.keys(editsPerFile).length) return buffer;
+
+  xmlPaths.forEach(path=>{
+    const inserts=editsPerFile[path];
+    if(!inserts||!inserts.length) return;
+    let xml=zip.file(path).asText();
+    inserts.sort((a,b)=>b.pos-a.pos);
+    for(const ins of inserts){
+      xml=xml.substring(0,ins.pos)+ins.text+xml.substring(ins.pos);
+    }
+    zip.file(path,xml);
+  });
+
+  return zip.generate({type:'uint8array'});
+}
+
+function renderDocxFromTemplate(buffer, data){
+  try{
+    const processed = preprocessDocxForConditionals(buffer, data);
+    const zip = new PizZip(processed);
+    const doc = new window.docxtemplater(zip, {
+      delimiters:{start:'{{', end:'}}'},
+      paragraphLoop:true,
+      linebreaks:true,
+      nullGetter:function(){return '';}
+    });
+    doc.render(data);
+    return doc.getZip().generate({
+      type:'blob',
+      mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+  }catch(e){
+    console.error('docx rendering failed, trying without preprocess:', e);
+    const zip = new PizZip(buffer);
+    const doc = new window.docxtemplater(zip, {
+      delimiters:{start:'{{', end:'}}'},
+      paragraphLoop:true,
+      linebreaks:true,
+      nullGetter:function(){return '';}
+    });
+    doc.render(data);
+    return doc.getZip().generate({
+      type:'blob',
+      mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+  }
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function generateJrctUrlXlsx(allRows){
+  if(typeof XLSX==='undefined') return null;
+  const findRowOfType = (t) => allRows.find(x => x?.type === t) || null;
+  const pairs = [
+    ['初回公表', findRowOfType('初回公表')],
+    ['変更', findRowOfType('変更')],
+    ['軽微変更', findRowOfType('軽微変更')]
+  ].filter(([_,row]) => row);
+  if(!pairs.length) return null;
+  const wb = XLSX.utils.book_new();
+  const header = ['jRCT種別','公表日','jRCT URL','管理番号'];
+  const data = [header];
+  pairs.forEach(([type, row]) => data.push([type, row.date||'', row.url||'', requestOutputNo(row)]));
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{wch:14},{wch:14},{wch:50},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, ws, 'jRCT URL');
+  const buf = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+  return new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+
+function jRCTUrlFileName(r){
+  const naming = NAMING_MASTER.find(x => x.source === 'jRCT_URL');
+  if(!naming) return null;
+  const prefix = requestOutputNo(r);
+  const seqLabel = v => {
+    const n = String(v||'').trim();
+    const m = n.match(/^(\d+)(?:\.\d+)?$/);
+    return m ? m[1].padStart(2,'0') : n;
+  };
+  const parts = [...naming.pattern];
+  if(parts.length >= 3) parts[2] = seqLabel(parts[2]);
+  return [prefix, ...parts.slice(1)].join('_') + '.xlsx';
+}
+
+async function downloadDraftDocxForRow(idx){
+  if(!templateDocxBuffer){
+    fileStatuses.docx='先に起案文ひな形（.docx）を読み込んでください。';
+    renderTemplate();
+    return;
+  }
+  if(!ensureDocxLibReady()){
+    fileStatuses.docx='docx差し込みライブラリの読み込みに失敗しました。';
+    renderTemplate();
+    return;
+  }
+  const rows = requestRowsData();
+  const r = rows[idx];
+  if(!r){
+    fileStatuses.docx='対象の依頼行が見つかりません。';
+    renderTemplate();
+    return;
+  }
+  try{
+    const blob = renderDocxFromTemplate(templateDocxBuffer.slice(0), docxDataForRow(r));
+    const outType = outputCategory(r.type);
+downloadBlob(blob, `${combinedDraftReportPrefix()}_${outType}_00_起案.docx`);
+    fileStatuses.docx=`✅ 依頼${idx+1}の起案docxを出力しました。`;
+    renderTemplate();
+  }catch(err){
+    fileStatuses.docx='docx出力に失敗しました：' + (err.message || err);
+    renderTemplate();
+  }
+}
+async function downloadCombinedDraftDocx(){
+  if(!templateDocxBuffer){
+    fileStatuses.docx='先に起案文ひな形（.docx）を読み込んでください。';
+    renderTemplate();
+    return;
+  }
+  if(!ensureDocxLibReady()){
+    fileStatuses.docx='docx差し込みライブラリの読み込みに失敗しました。';
+    renderTemplate();
+    return;
+  }
+
+  const rows = requestRowsData();
+  const r = rows[0];
+  if(!r){
+    fileStatuses.docx='対象の依頼行がありません。';
+    renderTemplate();
+    return;
+  }
+
+  try{
+    const blob = renderDocxFromTemplate(templateDocxBuffer.slice(0), docxDataForRow(r));
+    const outType = outputCategory(r.type);
+    const fileName = `${combinedDraftReportPrefix()}_${outType}_00_起案.docx`;
+    downloadBlob(blob, fileName);
+    fileStatuses.docx='✅ 複数依頼をまとめた起案docxを1枚出力しました。';
+    renderTemplate();
+  }catch(err){
+    fileStatuses.docx='起案docx出力に失敗しました：' + (err.message || err);
+    renderTemplate();
+  }
+}
+
+async function downloadFolderZip(){
+  if(typeof JSZip==='undefined'){fileStatuses.zip='ZIP生成ライブラリの読み込みに失敗しました。';if(stages[current].id==='drafts') renderTemplate();return;}
+  fileStatuses.zip='生成中…';
+  if(stages[current].id==='drafts') renderTemplate();
+  const zip=new JSZip();
+  const rows=requestRowsData();
+  const draft=emailDraft();
+  const mailFile=combinedMailFileName();
+  const mailContent=`件名：${draft.subject}\n\n${draft.body}`;
+  const ledgerCsv=csvFromRequests();
+  const ledgerFileName=ledgerCsvFileName();
+  const docxLibReady = ensureDocxLibReady();
+  const draftDocxReady = !!templateDocxBuffer && docxLibReady;
+  const reportDocxReady = !!reportTemplateDocxBuffer && docxLibReady;
+
+  let consolidatedDraftBlob = null;
+  let consolidatedReportBlob = null;
+
+  let jrctBlob = null;
+  let jrctName = null;
+  if(typeof XLSX!=='undefined'){
+    try{
+      const b = generateJrctUrlXlsx(rows);
+      if(b){
+        jrctBlob = b;
+        jrctName = jRCTUrlFileName(rows[0]);
+      }
+    }catch(e){fileStatuses.zip='jRCT URL Excel生成に失敗しました：'+e.message;}
+  }
+  if(draftDocxReady){
+    try{ consolidatedDraftBlob = renderDocxFromTemplate(templateDocxBuffer.slice(0), docxDataForRow(rows[0])); }catch(e){fileStatuses.zip='起案docx生成に失敗しました：'+e.message;}
+  }
+  if(reportDocxReady){
+    try{ consolidatedReportBlob = renderDocxFromTemplate(reportTemplateDocxBuffer.slice(0), reportDocxDataForRow(rows[0])); }catch(e){fileStatuses.zip='報告案docx生成に失敗しました：'+e.message;}
+  }
+
+  rows.forEach((r,i)=>{
+  const fs = folderSetFor(r);
+  const outType = outputCategory(r.type);
+
+  const includeApply = getFolderSelection(i,'apply');
+  const includeCscc = getFolderSelection(i,'cscc');
+  const includeManager = getFolderSelection(i,'manager');
+
+  if(includeApply){
+    zip.folder(fs.apply).file('.keep', `${fs.apply}（申請フォルダ）`);
+  }
+
+  let csccFolder = null;
+  if(includeCscc){
+    csccFolder = zip.folder(fs.cscc);
+    csccFolder.file('.keep', `${fs.cscc}（CSCC側公表フォルダ）`);
+    csccFolder.file(ledgerFileName, '\uFEFF' + ledgerCsv);
+
+    if(consolidatedDraftBlob){
+      try{
+        csccFolder.file(`${combinedDraftReportPrefix()}_${outputCategory(rows[0].type)}_00_起案.docx`, consolidatedDraftBlob);
+      }catch(e){fileStatuses.zip='起案docxのZIP格納に失敗しました：'+e.message;}
+    }
+
+    if(consolidatedReportBlob){
+      try{
+        csccFolder.file(`${combinedDraftReportPrefix()}_${outputCategory(rows[0].type)}_02_報告案.docx`, consolidatedReportBlob);
+      }catch(e){fileStatuses.zip='報告案docxのZIP格納に失敗しました：'+e.message;}
+    }
+
+    csccFolder.file(mailFile, mailContent);
+  }
+
+  if(includeManager){
+    const managerFolder = includeCscc && csccFolder
+      ? csccFolder.folder(fs.manager)
+      : zip.folder(fs.manager);
+
+    managerFolder.file('.keep', `${fs.manager}（管理者側公表フォルダ）`);
+    if(r.type === '初回公表' && jrctBlob && jrctName){
+      try{ managerFolder.file(jrctName, jrctBlob); }catch(e){fileStatuses.zip='jRCT URL ExcelのZIP格納に失敗しました：'+e.message;}
+    }
+  }
+});
+
+  try{
+    const blob=await zip.generateAsync({type:'blob'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const zipName=rows.length?`${requestOutputNo(rows[0])}_フォルダ一式.zip`:'フォルダ一式.zip';
+    a.href=url;a.download=zipName;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    const docxNote = (consolidatedDraftBlob||consolidatedReportBlob)
+      ? '起案docx・報告案docxを全フォルダに格納、'
+      : '（起案docx・報告案docxのひな形が未読込のため、docxは含まれていません）';
+    fileStatuses.zip=`✅ ${zipName} をダウンロードしました（${docxNote}台帳CSVはCSCC側公表フォルダに格納）。`;
+    if(stages[current].id==='drafts') renderTemplate();
+  }catch(e){fileStatuses.zip='ZIP生成に失敗しました：'+e.message;if(stages[current].id==='drafts') renderTemplate();}
+}
+
+function visibleStages(){
+  return state.appMode==='back'
+    ? stages.filter(s=>['work','path','send'].includes(s.id))
+    : stages.filter(s=>['intake','folders','drafts','files'].includes(s.id));
+}
+function syncCurrentToMode(){
+  const ids=visibleStages().map(s=>s.id);
+  if(!ids.includes(stages[current].id)) current=stages.findIndex(s=>s.id===ids[0]);
+}
+function updateModeUI(){
+  const front=state.appMode==='front';
+  document.getElementById('modeFrontBtn').classList.toggle('active-mode',front);
+  document.getElementById('modeBackBtn').classList.toggle('active-mode',!front);
+  document.getElementById('headlineTitle').textContent = front
+    ? '起案：入口入力から台帳CSV・フォルダZIP作成まで'
+    : '管理者報告：台帳CSV読込から台帳更新CSV出力まで';
+  document.getElementById('headlineText').textContent = front
+    ? '研究課題名・研究責任者などの共通情報を最初に入力し、複数依頼は下のエリアで1件ずつ管理します。'
+    : '決裁後は管理者報告台帳CSVを読み込み、対象行を選択してCSCC側作業・管理者側格納・送信後の台帳更新までを進めます。研究課題名・研究責任者は台帳CSVから自動で復元されます。';
+  renderFlowGuide();
+}
+
+const FLOW_STEPS = {
+  front: [
+    {id:'intake',label:'① 入口入力'},
+    {id:'folders',label:'② フォルダ確認'},
+    {id:'drafts',label:'③ 起案・報告案作成'},
+    {id:'files',label:'④ ファイル名確認'}
+  ],
+  back: [
+    {id:'work',label:'⑤ CSCC側作業'},
+    {id:'path',label:'⑥ パス確定'},
+    {id:'send',label:'⑦ メール送信'}
+  ]
+};
+
+function renderFlowGuide(){
+  const el=document.getElementById('flowGuide');
+  if(!el) return;
+  const mode=state.appMode==='front'?'front':'back';
+  const steps=FLOW_STEPS[mode];
+  const vis=visibleStages();
+  const currentId=stages[current].id;
+  el.innerHTML=steps.map((s,i)=>{
+    const stageIdx=vis.findIndex(v=>v.id===s.id);
+    const doneFlag=done[stages.findIndex(x=>x.id===s.id)];
+    const isCurrent=s.id===currentId;
+    const cls=doneFlag?'done':isCurrent?'current':'';
+    const arrow=i<steps.length-1?'<span class="flow-arrow">→</span>':'';
+    return `<span class="flow-step ${cls}">${doneFlag?'✓ ':''}${s.label}</span>${arrow}`;
+  }).join('');
+}
+
+function renderRequestRows(hostOverride=null){
+  const hosts = hostOverride
+    ? [hostOverride]
+    : Array.from(document.querySelectorAll('#multiRequestHost'));
+  if(!hosts.length) return;
+  const primaryHost = hostOverride || hosts[0];
+  if(!state.requestRows || !state.requestRows.length)
+    state.requestRows=[{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}];
+  const requestHtml = requestRowsData().map((r,i)=>{
+    const isPeriodic = r.type === '定期報告';
+    const dateLabel = isPeriodic ? '報告期間' : '公表日';
+    const datePlaceholder = isPeriodic ? '例：2026/4/5～2026/9/30' : '例：2026/07/05';
+    return `
+<div class="template-card request-row" style="padding:.8rem;margin-top:.55rem">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.55rem">
+<strong style="font-size:.82rem">依頼 ${i+1}</strong>
+<button type="button" class="ghost-btn remove-request" data-remove="${i}" style="min-height:30px;padding:0 .7rem;font-size:.72rem">削除</button>
+</div>
+<div class="grid-2">
+<div class="field"><label>報告区分</label>
+<select class="select" data-r-type="${i}">
+${['初回公表','変更','軽微変更','届出外','疾病等報告（医薬品）','疾病等報告（医療機器）','疾病等報告（再生医療等製品）','不適合報告','主要評価項目報告書等の通知','主要評価項目報告書又は総括報告書の概要の公表','審査意見の報告','定期報告','終了','その他'].map(opt=>`<option ${r.type===opt?'selected':''}>${opt}</option>`).join('')}
+</select>
+${r.type && r.type.includes('疾病等') ? `
+<div style="margin-top:.5rem">
+<div class="help" style="margin-bottom:.3rem">自施設での発現か、他施設での発現かを選択してください。</div>
+<div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+<div class="mode-group" style="display:inline-flex">
+  <button type="button" class="chip-btn ${r.facilityType==='自施設'?'active-mode':''}" data-r-facility="${i}" data-facility-val="自施設">自施設</button>
+  <button type="button" class="chip-btn ${r.facilityType==='他施設'?'active-mode':''}" data-r-facility="${i}" data-facility-val="他施設">他施設</button>
+</div>
+<div class="field" style="margin:0;flex:1;min-width:180px"><label>報告詳細</label><input class="input" data-r-facility-detail="${i}" value="${h(r.facilityDetail||'')}" placeholder="報告詳細を入力"></div>
+</div>
+</div>` : ''}
+</select></div>
+<div class="field"><label>元の起案番号</label>
+<input class="input" data-r-base="${i}" value="${h(r.base||'特2025-17_2-1')}" placeholder="例：特2025-17_2-1">
+</div>
+</div>
+<div class="grid-2" style="margin-top:.7rem">
+<div class="field"><label>生成後の起案番号</label>
+<input class="input readonly" readonly data-generated-no value="${h(requestOutputNo(r))}">
+</div>
+<div class="field"><label>${dateLabel}</label>
+<input class="input" data-r-date="${i}" value="${h(r.date||'')}" placeholder="${datePlaceholder}"${isPeriodic?' pattern="\\d{4}/\\d{1,2}/\\d{1,2}～\\d{4}/\\d{1,2}/\\d{1,2}" title="形式：yyyy/m/d～yyyy/m/d"':''}>
+${isPeriodic?'<div class="help" style="color:var(--primary)">形式：yyyy/m/d～yyyy/m/d（最初の日付入力後に「～」が自動挿入されます）</div>':''}
+</div>
+</div>
+<div class="field" style="margin-top:.7rem"><label>jRCT URL</label>
+<input class="input" data-r-url="${i}" value="${h(r.url||'')}" placeholder="https://jrct...">
+</div>
+<div class="help">1行ごとに「報告区分」と「元の起案番号」を入力すると、生成後の起案番号が自動計算されます。</div>
+</div>`;
+  }).join('')
+  + '<div style="margin-top:.7rem"><button type="button" class="primary-btn" id="addRequestBtn">＋ 依頼行を追加</button></div>';
+
+  hosts.forEach(host=>{ host.innerHTML = requestHtml; });
+
+  primaryHost.querySelectorAll('[data-r-type]').forEach(el=>{
+    el.addEventListener('change',()=>{
+      const i=+el.dataset.rType;
+      setRequestRow(i,'type',el.value);
+      renderAll();
+    });
+  });
+  primaryHost.querySelectorAll('[data-r-facility]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i=+btn.dataset.rFacility;
+      const val=btn.dataset.facilityVal;
+      setRequestRow(i,'facilityType',val);
+      renderAll();
+    });
+  });
+  primaryHost.querySelectorAll('[data-r-facility-detail]').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const i=+el.dataset.rFacilityDetail;
+      setRequestRow(i,'facilityDetail',el.value);
+    });
+  });
+  primaryHost.querySelectorAll('[data-r-base]').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const i = +el.dataset.rBase;
+      setRequestRow(i,'base',el.value);
+      const row = el.closest('.request-row');
+      const out = row?.querySelector('[data-generated-no]');
+      if(out) out.value = requestOutputNo(state.requestRows[i]);
+      renderTemplate();
+    });
+    el.addEventListener('change',()=>{
+      const i = +el.dataset.rBase;
+      setRequestRow(i,'base',el.value);
+      renderAll();
+    });
+  });
+  primaryHost.querySelectorAll('[data-r-date]').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const i = +el.dataset.rDate;
+      const row = state.requestRows[i];
+      const periodic = row && row.type === '定期報告';
+      if(periodic){
+        const m = el.value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+        if(m){
+          const withTilde = el.value + '～';
+          el.value = withTilde;
+          setRequestRow(i,'date',withTilde);
+          el.setSelectionRange(withTilde.length, withTilde.length);
+          renderTemplate();
+          return;
+        }
+        if(el.value && el.value.includes('～')){
+          const valid = /^\d{4}\/\d{1,2}\/\d{1,2}～\d{4}\/\d{1,2}\/\d{1,2}$/.test(el.value);
+          el.style.borderColor = valid ? '' : 'var(--error)';
+          el.style.boxShadow = valid ? '' : '0 0 0 2px rgba(181,52,130,.12)';
+        } else {
+          el.style.borderColor = '';
+          el.style.boxShadow = '';
+        }
+      }
+      setRequestRow(i,'date',el.value);
+      renderTemplate();
+    });
+    el.addEventListener('change',()=>{
+      const i = +el.dataset.rDate;
+      setRequestRow(i,'date',el.value);
+      renderAll();
+    });
+  });
+  primaryHost.querySelectorAll('[data-r-url]').forEach(el=>{
+    el.addEventListener('input',()=>{
+      const i = +el.dataset.rUrl;
+      setRequestRow(i,'url',el.value);
+      renderTemplate();
+    });
+    el.addEventListener('change',()=>{
+      const i = +el.dataset.rUrl;
+      setRequestRow(i,'url',el.value);
+      renderAll();
+    });
+  });
+  primaryHost.querySelectorAll('.remove-request').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i=+btn.dataset.remove;
+      state.requestRows.splice(i,1);
+      if(!state.requestRows.length)
+        state.requestRows=[{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}];
+      renderAll();
+    });
+  });
+  primaryHost.querySelector('#addRequestBtn')?.addEventListener('click',()=>{
+    state.requestRows.push({type:'変更',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''});
+    renderAll();
+  });
+}
+
+
+
+function renderMain(){
+  syncCurrentToMode();
+  const stage=stages[current];
+  if(state.lastRenderedStageId && state.lastRenderedStageId!==stage.id && state.stepEnterTimestamp){
+    const elapsed=Math.round((Date.now()-state.stepEnterTimestamp)/1000);
+    state.stepDurations[state.lastRenderedStageId]=(state.stepDurations[state.lastRenderedStageId]||0)+elapsed;
+  }
+  if(state.lastRenderedStageId!==stage.id){
+    state.stepEnterTimestamp=Date.now();
+    state.lastRenderedStageId=stage.id;
+  }
+  const vis=visibleStages();
+  const allDone=vis.every(s=>done[stages.findIndex(x=>x.id===s.id)]);
+  const wrap=document.getElementById('mainStage');
+  if(allDone){
+    wrap.innerHTML=`
+<div class="success-banner">
+<div style="font-size:3rem">🎉</div>
+<h3>${state.appMode==='front'?'起案完了':'管理者報告完了'}</h3>
+<p class="small">${state.appMode==='front'
+      ? '台帳CSVひな型とフォルダZIPの作成まで完了しました。'
+      : '台帳CSVの読込から更新済み台帳CSV出力まで完了しました。'}</p>
+<div style="margin-top:1rem"><button class="primary-btn" onclick="resetAll()">新しい案件を開始</button></div>
+</div>`;return;
+  }
+
+  const standardFields=(stage.fields||[]).filter(f=>!['managerAffil1','managerDept1','managerTitle1','managerName1','managerAffil2','managerDept2','managerTitle2','managerName2'].includes(f.id));
+  const fieldHTML=standardFields.map(f=>{
+    if(f.options && f.options.length){
+      const currentVal = state[f.id] || '';
+      const isPreset = f.options.includes(currentVal);
+      return `<div class="field"><label>${h(f.label)}</label>
+<div style="display:grid;gap:.35rem">
+<select class="input" data-preset-select="${f.id}" style="height:auto;padding:.45rem .6rem">
+<option value="">選択してください</option>
+${f.options.map(o=>`<option value="${h(o)}" ${currentVal===o?'selected':''}>${h(o)}</option>`).join('')}
+<option value="__free" ${!isPreset && currentVal ? 'selected':''}>自由記載</option>
+</select>
+<input class="input" data-preset-free="${f.id}" id="${f.id}" value="${h(currentVal)}" placeholder="${h(f.placeholder||'')}" ${!isPreset && currentVal ? '':'style="display:none"'}></div></div>`;
+    }
+    return `<div class="field"><label>${h(f.label)}</label>
+<input type="${h(f.type||'text')}" class="input" data-bind="${f.id}" id="${f.id}" value="${h(state[f.id]||'')}" placeholder="${h(f.placeholder||'')}"></div>`;
+  }).join('');
+  const managerHTML=stage.id==='intake' ? `
+<div class="section-title">研究区分</div>
+<div class="study-type-wrap" style="margin-top:.7rem">
+  <div class="study-group ${state.studyTypeSpecific ? 'selected' : ''}">
+    <label class="checkitem study-main ${state.studyTypeSpecific ? 'checked' : ''}">
+      <input type="checkbox" data-bind="studyTypeSpecific" id="studyTypeSpecific" ${state.studyTypeSpecific ? 'checked' : ''}>
+      <div>
+        <strong>特定臨床研究</strong>
+        <span>必要に応じて未承認・適応外、資金提供も選択します。</span>
+      </div>
+    </label>
+
+    <div class="study-subgrid">
+      <label class="checkitem study-sub ${state.studyTypeUnapproved ? 'checked' : ''}">
+        <input type="checkbox" data-bind="studyTypeUnapproved" id="studyTypeUnapproved" ${state.studyTypeUnapproved ? 'checked' : ''}>
+        <div><strong>未承認・適応外</strong></div>
+      </label>
+
+      <label class="checkitem study-sub ${state.studyTypeFunding ? 'checked' : ''}">
+        <input type="checkbox" data-bind="studyTypeFunding" id="studyTypeFunding" ${state.studyTypeFunding ? 'checked' : ''}>
+        <div><strong>資金提供</strong></div>
+      </label>
+    </div>
+  </div>
+
+  <label class="checkitem study-group study-single ${state.studyTypeNonspecific ? 'checked' : ''}">
+    <input type="checkbox" data-bind="studyTypeNonspecific" id="studyTypeNonspecific" ${state.studyTypeNonspecific ? 'checked' : ''}>
+    <div><strong>非特定臨床研究</strong></div>
+  </label>
+
+  <div class="help">選択結果：${h(studyCategoryLabel()||'未選択')}</div>
+</div>
+<div class="section-title">研究責任者</div>
+<div class="template-card" style="margin-top:.7rem">
+<div class="help" style="margin-bottom:.7rem">2人目は空欄可です。入力がある場合のみメール本文やCSVの研究責任者欄に追加表示されます。</div>
+<div class="grid-4">
+<div class="field"><label>所属機関</label><input class="input" data-bind="managerAffil1" id="managerAffil1" value="${h(state.managerAffil1||'')}" placeholder="例：○○病院"></div>
+<div class="field"><label>所属部署</label><input class="input" data-bind="managerDept1" id="managerDept1" value="${h(state.managerDept1||'')}" placeholder="例：呼吸器内科"></div>
+<div class="field"><label>職名</label><input class="input" data-bind="managerTitle1" id="managerTitle1" value="${h(state.managerTitle1||'')}" placeholder="例：病院長"></div>
+<div class="field"><label>氏名</label><input class="input" data-bind="managerName1" id="managerName1" value="${h(state.managerName1||'')}" placeholder="例：〇〇 〇〇"></div>
+</div>
+<div class="grid-4" style="margin-top:.7rem">
+<div class="field"><label>所属機関</label><input class="input" data-bind="managerAffil2" id="managerAffil2" value="${h(state.managerAffil2||'')}" placeholder="例：○○大学"></div>
+<div class="field"><label>所属部署</label><input class="input" data-bind="managerDept2" id="managerDept2" value="${h(state.managerDept2||'')}" placeholder="例：呼吸器内科"></div>
+<div class="field"><label>職名</label><input class="input" data-bind="managerTitle2" id="managerTitle2" value="${h(state.managerTitle2||'')}" placeholder="例：教授"></div>
+<div class="field"><label>氏名</label><input class="input" data-bind="managerName2" id="managerName2" value="${h(state.managerName2||'')}" placeholder="例：〇〇 〇〇"></div>
+</div>
+</div>` : '';
+
+  const generatedHTML =
+    stage.id==='folders'
+      ? `
+<div class="section-title">ステップ1の依頼行から自動生成されたフォルダ名</div>
+${requestRowsData().map((r,i)=>{
+   const fs=folderSetFor(r);
+   return `<div class="template-card" style="margin-top:.7rem">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem">
+<strong style="font-size:.82rem">依頼 ${i+1}：${h(r.type)}</strong><span class="badge">${h(`${fs.no}_${outputCategory(r.type)}`)}</span></div>
+<div class="grid-2">
+<div class="field"><label>申請フォルダ名</label><input class="input readonly" readonly value="${h(fs.apply)}"></div>
+<div class="field"><label>CSCC側公表フォルダ名</label><input class="input readonly" readonly value="${h(fs.cscc)}"></div>
+</div>
+<div class="grid-2" style="margin-top:.7rem">
+<div class="field"><label>管理者側公表フォルダ名</label><input class="input readonly" readonly value="${h(fs.manager)}"></div>
+</div>
+</div>`;
+}).join('')}`
+        : stage.id==='drafts'
+      ? `
+<div class="template-card" style="margin-top:.9rem">
+<div class="section-title">現在の依頼行</div>
+<div class="help">研究課題名「${h(getValue('studyTitle')||'（未入力）')}」・研究責任者「${h(buildManagerDisplay()||'（未入力）')}」が設定されています。右のサイドバーから起案docx・報告案docx・台帳CSV・フォルダZIPを生成できます。</div>
+</div>`
+    : stage.id==='work'
+      ? `
+<div class="section-title">管理者報告台帳CSVを読み込んでステップ5から再開</div>
+<div class="template-card" style="margin-top:.7rem">
+<div class="field"><label>管理者報告台帳CSVを読み込み</label>
+<input type="file" id="csvInputStep5" accept=".csv" class="input" style="padding:.4rem .6rem;height:auto"></div>
+<div class="help" id="csvStatusStep5" style="margin-top:.4rem">${fileStatuses.csvStep5 || '決裁完了後の案件を台帳から読み込み、対象行を選択してCSCC側フォルダ作業をここから再開できます。研究課題名・研究責任者もCSVから自動で復元されます。'}</div>
+</div>
+<div class="template-card" style="margin-top:.7rem">
+<div class="grid-2">
+<div class="field"><label>復元された研究課題名</label><input class="input readonly" readonly value="${h(getValue('studyTitle')||'（未読込）')}"></div>
+<div class="field"><label>復元された研究責任者</label><input class="input readonly" readonly value="${h(buildManagerDisplay()||'（未読込）')}"></div>
+</div>
+</div>
+<div class="section-title">読み込んだ台帳行の選択</div>
+<div class="template-card" style="margin-top:.7rem">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.65rem">
+<strong style="font-size:.82rem">対象行：${h(ledgerSelectionSummary())}</strong>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap">
+<button type="button" class="ghost-btn" id="selectAllLedgerBtn">すべて選択</button>
+<button type="button" class="ghost-btn" id="clearLedgerBtn">すべて解除</button>
+</div>
+</div>
+<div id="loadedRowsPreview">${(state.loadedLedgerRows||[]).length
+  ? state.loadedLedgerRows.map((r,i)=>{
+      const checked=(state.selectedLedgerIndexes||[]).includes(i);
+      return `<label class="row-pick ${checked?'selected':''}">
+<input type="checkbox" data-ledger-row="${i}" ${checked?'checked':''}>
+<div class="row-pick-main">
+<strong>行${i+1}：${h(r['起案番号']||'')}</strong>
+<span>報告区分：${h(r['報告区分']||'')}</span>
+<span>ステータス：${h(r['ステータス']||'')}</span>
+<span>公表日：${h(r['公表日']||'')}</span>
+</div>
+</label>`;
+    }).join('')
+  : '<div class="help">まだ台帳CSVは読み込まれていません。</div>'}</div>
+</div>
+<div class="section-title">選択中の行に対応するCSCC側フォルダ</div>
+${(state.selectedLedgerIndexes||[]).length
+  ? requestRowsData().map((r,i)=>{const fs=folderSetFor(r);return `<div class="file-row"><strong>依頼${i+1}：${h(r.type)}</strong><span>${h(fs.cscc)}</span></div>`;}).join('')
+  : '<div class="help">台帳行を選択すると、対象フォルダがここに表示されます。</div>'}`
+    : stage.id==='path'
+      ? `
+<div class="section-title">管理者報告メール案</div>
+${(()=>{
+  const rows=requestRowsData();
+  const draft=emailDraft();
+  const mailFile=combinedMailFileName();
+  const primaryFolder=rows.length?folderSetFor(rows[0]).manager:'（管理者側フォルダ）';
+  return `<div class="template-card" style="margin-top:.7rem">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem">
+<strong style="font-size:.82rem">依頼 ${rows.length}件をまとめて1メール</strong>
+<span class="badge">${h(primaryFolder)}</span></div>
+<div class="field"><label>保存ファイル名</label>
+<input class="input readonly" readonly value="${h(mailFile)}"></div>
+<div class="help">主な保存先：${h(primaryFolder)}\\${h(mailFile)}</div>
+<div class="section-title" style="margin-top:.6rem">テキスト内容</div>
+<div class="field"><label>件名</label><input class="input" id="pathMailSubject" value="${h(draft.subject)}"></div>
+<div class="field" style="margin-top:.5rem"><label>本文</label><textarea class="textarea" id="pathMailBody" style="min-height:180px">${h(draft.body)}</textarea></div>
+<div class="help" style="margin-top:.4rem">変更は自動保存されます。ZIP出力やメール本文にも反映されます。</div>
+<div style="display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.6rem">
+  <button class="ghost-btn" id="dlPathMailBtn" type="button">📄 メール案をダウンロード</button>
+  <button class="ghost-btn" id="copyPathMailBtn" type="button">📋 メール案をコピー</button>
+</div>
+<div class="help" id="pathMailStatus"></div>
+</div>`;
+})()}`
+    : stage.id==='send'
+      ? `
+<div class="section-title">管理者報告台帳への書き戻し</div>
+<div class="template-card" style="margin-top:.7rem">
+<div class="grid-2" style="margin-bottom:.7rem">
+<div class="field"><label>研究課題名（台帳CSVへ記録）</label><input class="input readonly" readonly value="${h(getValue('studyTitle')||'（未入力）')}"></div>
+<div class="field"><label>研究責任者（台帳CSVへ記録）</label><input class="input readonly" readonly value="${h(buildManagerDisplay()||'（未入力）')}"></div>
+</div>
+<div class="help">ステップ5で選択した台帳行に対して、ステータス=送信済、送信日、管理者側フォルダパス、研究課題名・研究責任者を書き込んでCSVを書き出します。</div>
+</div>
+<div class="section-title">管理者報告メール案</div>
+${(()=>{
+  const draft=emailDraft();
+  return `<div class="template-card" style="margin-top:.7rem">
+<div class="field"><label>件名</label><input class="input" id="pathMailSubject" value="${h(draft.subject)}"></div>
+<div class="field" style="margin-top:.5rem"><label>本文</label><textarea class="textarea" id="pathMailBody" style="min-height:180px">${h(draft.body)}</textarea></div>
+<div class="help" style="margin-top:.4rem">変更は自動保存されます。ZIP出力やメール本文にも反映されます。</div>
+<div style="display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.6rem">
+  <button class="ghost-btn" id="dlPathMailBtn" type="button">📄 メール案をダウンロード</button>
+  <button class="ghost-btn" id="copyPathMailBtn" type="button">📋 メール案をコピー</button>
+</div>
+<div class="help" id="pathMailStatus"></div>
+</div>`;
+})()}`
+    : '';
+
+  const notesHtml=stage.notes.map(n=>`<div class="note ${n[0]}">${h(n[1])}</div>`).join('');
+  wrap.innerHTML=`
+<div class="hero-box">
+<div class="hero-num">${stage.num}</div>
+<div><h3>${h(stage.title)}</h3><p>${h(stage.desc)}</p>
+<div class="hero-tags">${stage.tags.map(t=>`<span class="tag primary">${h(t)}</span>`).join('')}</div>
+</div></div>
+<div class="card-bd">
+${notesHtml?`<div class="note-list" style="margin-bottom:.75rem">${notesHtml}</div>`:''}
+${stage.id==='intake'
+  ? `<div class="template-card" style="margin-bottom:.75rem">
+<div class="help" style="margin-bottom:.6rem">JRCTページ（<code>jrct.mhlw.go.jp</code>）の内容をコピー＆貼り付けて、研究課題名・研究責任者などを自動入力します。<br>手順：JRCTページで <kbd>Ctrl+A</kbd> → <kbd>Ctrl+C</kbd> → 下に貼り付け → ボタンをクリック</div>
+<textarea class="textarea" id="jrctHtmlInput" placeholder="JRCTページのHTMLをここに貼り付けてください..." style="min-height:100px;font-size:.78rem"></textarea>
+<div style="margin-top:.5rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+<button type="button" class="primary-btn" id="jrctParseBtn">貼り付けて自動入力</button>
+<span class="help" id="jrctParseStatus"></span>
+</div>
+</div>
+<div class="template-card" style="margin-bottom:.75rem">
+<div class="help" style="margin-bottom:.6rem">以前保存した台帳CSVを読み込むと、研究課題名・研究責任者・研究区分・研究略称・依頼行などを自動復元し、続きから再開できます。</div>
+<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+<label class="ghost-btn" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center">台帳CSVを読み込む<input type="file" id="csvInputStep1" accept=".csv" style="display:none"></label>
+<span class="help" id="csvStatusStep1"></span>
+</div>
+</div>`:''}
+${standardFields.length||managerHTML?`<div class="section-title">入力項目</div>`:''}
+${standardFields.length?`<div class="grid-2">${fieldHTML}</div>`:''}
+${managerHTML}
+${stage.id==='intake'
+  ? `<div class="section-title">複数依頼の同時入力</div>
+<div class="help">1行ごとに「報告区分」と「元の起案番号」を入力すると、生成後の起案番号が自動計算されます。</div>
+<div id="multiRequestHost"></div>`:''}
+${generatedHTML}
+</div>`;
+
+  wrap.querySelectorAll('[data-bind]').forEach(el=>{
+    el.addEventListener('input',()=>{state[el.dataset.bind]=el.type==='checkbox'?el.checked:el.value;});
+  });
+  wrap.querySelectorAll('[data-preset-select]').forEach(sel=>{
+    const fieldId=sel.dataset.presetSelect;
+    const freeInput=wrap.querySelector(`[data-preset-free="${fieldId}"]`);
+    sel.addEventListener('change',()=>{
+      if(sel.value==='__free'){
+        if(freeInput){freeInput.style.display='';freeInput.focus();}
+        state[fieldId]=freeInput?freeInput.value:'';
+      }else{
+        if(freeInput){freeInput.style.display='none';freeInput.value='';}
+        state[fieldId]=sel.value;
+      }
+    });
+  });
+  wrap.querySelectorAll('[data-preset-free]').forEach(inp=>{
+    const fieldId=inp.dataset.presetFree;
+    inp.addEventListener('input',()=>{state[fieldId]=inp.value;});
+  });
+  wrap.querySelectorAll('[data-check]').forEach(el=>{
+    el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+  });
+
+  if(stage.id==='intake') renderRequestRows();
+
+  if(stage.id==='intake'){
+    document.getElementById('jrctParseBtn')?.addEventListener('click',()=>{
+      const input=document.getElementById('jrctHtmlInput');
+      const html=input?.value?.trim();
+      if(!html){const s=document.getElementById('jrctParseStatus');if(s){s.textContent='テキストエリアにJRCTページの内容を貼り付けてください。';s.style.color='var(--warn)';}return;}
+      if(!html.includes('jRCT')&&!html.includes('臨床研究')){const s=document.getElementById('jrctParseStatus');if(s){s.textContent='JRCTページの内容が見つかりません。正しいページをコピーしてください。';s.style.color='var(--error)';}return;}
+      try{
+        const data=parseJRCTHtml(html);
+        const filled=Object.values(data).filter(Boolean).length;
+        applyJRCTData(data);
+        setTimeout(()=>{
+          const s=document.getElementById('jrctParseStatus');
+          if(s){s.textContent='\u2705 '+filled+'\u9805\u76EE\u3092\u81EA\u52D5\u5165\u529B\u3057\u307E\u3057\u305F\u3002';s.style.color='var(--success)';}
+        },100);
+      }catch(e){
+        const s=document.getElementById('jrctParseStatus');
+        if(s){s.textContent='\u89E3\u6790\u306B\u5931\u6557\u3057\u307E\u3057\u305F\uFF1A'+e.message;s.style.color='var(--error)';}
+      }
+    });
+  }
+
+  if(stage.id==='intake'){
+    document.getElementById('csvInputStep1')?.addEventListener('change',handleCsvLoadFromFile);
+  }
+
+  if(stage.id==='drafts'){
+  }
+
+  if(stage.id==='work'){
+    document.getElementById('csvInputStep5')?.addEventListener('change',handleLedgerLoadForBack);
+    document.querySelectorAll('[data-ledger-row]').forEach(el=>{
+      el.addEventListener('change',()=>{
+        toggleLedgerRowSelection(+el.dataset.ledgerRow, el.checked);
+        renderAll();
+      });
+    });
+    document.getElementById('selectAllLedgerBtn')?.addEventListener('click',selectAllLedgerRows);
+    document.getElementById('clearLedgerBtn')?.addEventListener('click',clearLedgerRowSelection);
+  }
+
+  if(stage.id==='path'){
+    bindMailEditorEvents('pathMailSubject', 'pathMailBody', 'pathMailStatus');
+  }
+
+  if(stage.id==='send'){
+    bindMailEditorEvents('pathMailSubject', 'pathMailBody', 'pathMailStatus');
+  }
+}
+
+function renderTemplate(){
+  const wrap=document.getElementById('templateStage');
+  const stage=stages[current];
+  const rows=requestRowsData();
+  const docxReady = !!templateDocxBuffer;
+
+  wrap.style.display='';
+  const mainEl=document.querySelector('.main');
+  if(mainEl) mainEl.style.gridTemplateColumns='';
+
+  function checklistHtml(){
+    return `<div class="section-title">確認項目</div>
+<div class="checklist">
+${stage.checks.map((c,idx)=>`
+<label class="checkitem ${checks[`${stage.id}_${idx}`]?'checked':''}">
+<input type="checkbox" data-check="${stage.id}_${idx}" ${checks[`${stage.id}_${idx}`]?'checked':''}>
+<div><strong>${h(c[0])}</strong><span>${h(c[1])}</span></div>
+</label>`).join('')}
+</div>`;
+  }
+  function ctaHtml(){
+    const vis=visibleStages();
+    const idx=vis.findIndex(s=>s.id===stage.id);
+    return `<div class="cta-row" data-cta>
+<span class="hint">${h(stage.next)}</span>
+<div style="display:flex;gap:.55rem;align-items:center">
+${idx>0?'<button class="ghost-btn" data-prev>← 戻る</button>':''}
+<button class="primary-btn" data-next>
+${idx===vis.length-1?'完了する':'このステップを完了 →'}
+</button></div></div>`;
+  }
+  function bindCtaEvents(w){
+    w.querySelector('[data-prev]')?.addEventListener('click',()=>{
+      setStateFromDom();
+      const v=visibleStages();
+      const i=v.findIndex(s=>s.id===stage.id);
+      current=stages.findIndex(s=>s.id===v[Math.max(0,i-1)].id);
+      renderAll();
+    });
+    w.querySelector('[data-next]')?.addEventListener('click',()=>{
+      setStateFromDom();
+      done[current]=true;
+      const v=visibleStages();
+      const i=v.findIndex(s=>s.id===stage.id);
+      if(i<v.length-1) current=stages.findIndex(s=>s.id===v[i+1].id);
+      renderAll();
+    });
+  }
+
+  if(stage.id==='intake'){
+    const category = studyCategoryLabel() || '未選択';
+    const managers = buildManagerDisplay() || '未入力';
+    wrap.innerHTML=`
+    <div class="card-hd"><h3>共通情報の確認</h3><span class="badge">入口情報</span></div>
+    <div class="card-bd template-block">
+      <div class="template-card"><h4>研究課題情報</h4><div class="mono">研究略称：${h(getValue('mailSubject')||'')}
+研究課題名：${h(getValue('studyTitle')||'')}
+jRCT番号：${h(getValue('jrctNo')||'')}
+研究区分：${h(category)}</div></div>
+             <div class="template-card"><h4>研究責任者</h4><div class="mono">${h(managers)}</div></div>
+      ${checklistHtml()}
+      ${ctaHtml()}
+    </div>`;
+    wrap.querySelectorAll('[data-check]').forEach(el=>{
+      el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+    });
+    bindCtaEvents(wrap);
+    return;
+  }
+
+  if(stage.id==='folders'){
+    wrap.innerHTML=`
+    <div class="card-hd"><h3>生成フォルダ名</h3><span class="badge">${rows.length}件</span></div>
+    <div class="card-bd template-block">
+      ${rows.map((r,i)=>{
+        const fs=folderSetFor(r);
+        return `<div class="template-card"><h4>依頼 ${i+1}：${h(r.type)}</h4><div class="mono">申請：${h(fs.apply)}
+CSCC側：${h(fs.cscc)}
+管理者側：${h(fs.manager)}</div></div>`;
+      }).join('')}
+      <div style="margin-top:.75rem">${checklistHtml()}</div>
+      ${ctaHtml()}
+    </div>`;
+    wrap.querySelectorAll('[data-check]').forEach(el=>{
+      el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+    });
+    bindCtaEvents(wrap);
+    return;
+  }
+
+  if(stage.id==='files'){
+  wrap.innerHTML=`
+  <div class="card-hd"><h3>ファイル名候補・必須資料</h3><span class="badge">命名規則</span></div>
+  <div class="card-bd template-block">
+    ${rows.map((r,i)=>{
+      const naming = namingRulesForRow(r);
+      const no = requestOutputNo(r);
+
+      return `
+        <div class="template-card">
+          <h4>依頼 ${i+1}：${h(no)} / ${h(r.type)}</h4>
+
+          <div class="section-title">命名規則</div>
+          <div class="help">この依頼で想定するNAS格納ファイル名です。</div>
+          <div style="margin-top:.7rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+            <span class="badge">必須 ${h(String(naming.requiredCount))} 件</span>
+          </div>
+          <div class="template-block" style="margin-top:.75rem">
+            ${naming.html}
+          </div>
+        </div>
+      `;
+    }).join('')}
+    <div style="margin-top:.75rem">${checklistHtml()}</div>
+    ${ctaHtml()}
+  </div>`;
+  bindDraftsExtraEvents();
+  wrap.querySelectorAll('[data-check]').forEach(el=>{
+    el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+  });
+  bindCtaEvents(wrap);
+  return;
+}
+
+  if(stage.id==='drafts'){
+  const draft = emailDraft();
+  const naming = namingRulesForRow(rows[0]);
+  wrap.innerHTML = `
+  <div class="card-hd"><h3>起案文・台帳CSV・ZIP出力</h3><span class="badge">ひな形作成</span></div>
+  <div class="card-bd template-block">
+    <div class="template-card">
+      <h4>起案文docx差し込み</h4>
+      <div class="help">添付の起案文テンプレート(.docx)に、研究課題名・研究責任者・報告区分・公表日・jRCT URL・起案者情報を差し込んで出力します。</div>
+      <div style="margin-top:.7rem;display:grid;gap:.75rem">
+        <div class="field"><label>起案文ひな形(.docx)</label><input class="input" type="file" id="templateDocxInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+        <div class="help" id="docxTemplateStatus">${fileStatuses.docx || (docxReady ? `✅ ひな形を読込済み：${h(templateDocxName)}` : '未読込です。')}</div>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <h4>報告案docx差し込み</h4>
+      <div class="help">添付の報告案テンプレート(.docx)に、ステップ1の研究種別・研究責任者・研究課題名に加え、同じ元の起案番号の初回・変更・軽微変更をまとめて差し込んで出力します。</div>
+      <div style="margin-top:.7rem;display:grid;gap:.75rem">
+        <div class="field"><label>報告案ひな形(.docx)</label><input class="input" type="file" id="reportTemplateDocxInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div>
+        <div class="help" id="reportDocxTemplateStatus">${fileStatuses.reportDocx || (reportTemplateDocxBuffer ? `✅ ひな形を読込済み：${h(reportTemplateDocxName)}` : '未読込です。')}</div>
+      </div>
+    </div>
+
+    <div class="template-card">
+  <h4>依頼一覧・ZIPに含めるフォルダ</h4>
+  <div class="help">依頼ごとに、ZIPへ含める申請フォルダ・CSCC側公表フォルダ・管理者側公表フォルダを選べます。未チェックのフォルダはZIPに含めません。</div>
+  <div style="display:grid;gap:.75rem;margin-top:.75rem">
+    ${rows.map((r,i)=>{
+      const fs = folderSetFor(r);
+      return `
+        <div class="template-card" style="background:var(--surface);padding:.8rem">
+          <h4>依頼 ${i+1}</h4>
+          <div class="mono">起案番号：${h(requestOutputNo(r))}
+報告区分：${h(r.type)}
+研究題名：${h(getValue('studyTitle')||'')}
+研究責任者：${h([getValue('managerAffil1'),getValue('managerDept1'),getValue('managerTitle1'),getValue('managerName1')].filter(Boolean).join(' '))}
+${r.type==='定期報告'?'報告期間':'公表日'}：${h(r.date||'')}
+jRCT URL：${h(r.url||'')}</div>
+
+          <div class="section-title">ZIPに含めるフォルダ</div>
+          <div class="checklist">
+            <label class="checkitem ${getFolderSelection(i,'apply') ? 'checked' : ''}">
+              <input type="checkbox" data-folder-sel="${i}-apply" ${getFolderSelection(i,'apply') ? 'checked' : ''}>
+              <div>
+                <strong>① 申請フォルダ</strong>
+                <span>${h(fs.apply)}</span>
+              </div>
+            </label>
+
+            <label class="checkitem ${getFolderSelection(i,'cscc') ? 'checked' : ''}">
+              <input type="checkbox" data-folder-sel="${i}-cscc" ${getFolderSelection(i,'cscc') ? 'checked' : ''}>
+              <div>
+                <strong>② CSCC側公表フォルダ</strong>
+                <span>${h(fs.cscc)}</span>
+              </div>
+            </label>
+
+            <label class="checkitem ${getFolderSelection(i,'manager') ? 'checked' : ''}">
+              <input type="checkbox" data-folder-sel="${i}-manager" ${getFolderSelection(i,'manager') ? 'checked' : ''}>
+              <div>
+                <strong>③ 管理者側公表フォルダ</strong>
+                <span>${h(fs.manager)}</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="help" style="margin-top:.55rem">台帳CSVは、②CSCC側公表フォルダを含めた場合のみ、その中に保存されます。</div>
+        </div>
+      `;
+    }).join('')}
+  </div>
+  <div style="margin-top:.75rem;display:flex;gap:.6rem;flex-wrap:wrap">
+    <button class="primary-btn" id="downloadAllDocxBtn">起案docxを1枚出力</button>
+    <button class="ghost-btn" id="downloadAllReportDocxBtn">報告案docxを1枚出力</button>
+    <button class="ghost-btn" id="downloadJrctUrlBtn">jRCT URL Excelを出力</button>
+  </div>
+</div>
+
+        <div class="template-card">
+      <h4>台帳CSV出力</h4>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <button class="ghost-btn" id="downloadCsvBtn">台帳CSVひな型をダウンロード</button>
+      </div>
+      <div class="help" id="csvStatus">${fileStatuses.csv || ''}</div>
+    </div>
+
+    <div class="template-card">
+      <h4>管理者報告メール案</h4>
+      <div class="help" style="margin-bottom:.5rem">件名と本文を編集できます。ZIP出力・各ステージのメール案に自動反映されます。</div>
+      <div class="field"><label>件名</label><input class="input" id="mailSubjectEdit" value="${h(draft.subject)}"></div>
+      <div class="field" style="margin-top:.5rem"><label>本文</label><textarea class="textarea" id="mailBodyEdit" style="min-height:180px">${h(draft.body)}</textarea></div>
+      <div class="help" style="margin-top:.4rem">変更は自動保存されます。</div>
+    </div>
+
+    <div class="template-card" style="text-align:center">
+      <h4>フォルダZIP出力</h4>
+      <div class="help">起案docx・報告案docx（ひな形読込済みの場合）・台帳CSV・管理者報告メール案をまとめてフォルダ構成でダウンロードします。起案docx・報告案docxは(cscc)側フォルダに格納されます。</div>
+      <div style="margin-top:.7rem">
+        <button class="primary-btn" id="downloadZipBtn">📦 フォルダZIPを生成してダウンロード</button>
+      </div>
+      <div class="help" id="zipStatus" style="margin-top:.5rem">${fileStatuses.zip || ''}</div>
+    </div>
+    <div style="margin-top:.75rem">${checklistHtml()}</div>
+    ${ctaHtml()}
+  </div>`;
+
+  document.getElementById('templateDocxInput')?.addEventListener('change', handleTemplateDocxLoad);
+  document.getElementById('reportTemplateDocxInput')?.addEventListener('change', handleReportTemplateDocxLoad);
+  document.getElementById('downloadAllDocxBtn')?.addEventListener('click', downloadCombinedDraftDocx);
+  document.getElementById('downloadAllReportDocxBtn')?.addEventListener('click', downloadCombinedReportDocx);
+  document.getElementById('downloadJrctUrlBtn')?.addEventListener('click', ()=>{
+    const rows = requestRowsData();
+    if(!rows.length){alert('依頼行がありません。');return;}
+    const blob = generateJrctUrlXlsx(rows);
+    if(!blob){alert('SheetJSライブラリが読み込まれていないか、jRCTデータがありません。');return;}
+    const name = jRCTUrlFileName(rows[0]) || 'jRCT_URL.xlsx';
+    downloadBlob(blob, name);
+  });
+  document.getElementById('downloadCsvBtn')?.addEventListener('click', downloadCsvFromRequests);
+  document.getElementById('downloadZipBtn')?.addEventListener('click', downloadFolderZip);
+  bindMailEditorEvents('mailSubjectEdit', 'mailBodyEdit', 'pathMailStatus');
+  bindDraftsExtraEvents();
+  wrap.querySelectorAll('[data-check]').forEach(el=>{
+    el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+  });
+  bindCtaEvents(wrap);
+  return;
+}
+
+  if(stage.id==='work'){
+    wrap.innerHTML=`
+    <div class="card-hd"><h3>CSCC側フォルダ作業</h3><span class="badge">再開</span></div>
+    <div class="card-bd template-block">
+      <div style="margin-top:.75rem">${checklistHtml()}</div>
+      ${ctaHtml()}
+    </div>`;
+    wrap.querySelectorAll('[data-check]').forEach(el=>{
+      el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+    });
+    bindCtaEvents(wrap);
+    return;
+  }
+
+  if(stage.id==='path'){
+    const rows=requestRowsData();
+    const paths=state.managerPaths||[];
+    wrap.innerHTML=`
+    <div class="card-hd"><h3>管理者側パス確定</h3><span class="badge">最終格納</span></div>
+    <div class="card-bd template-block">
+      ${rows.map((r,i)=>`<div class="template-card">
+        <h4>依頼 ${i+1}：${h(r.type)} / ${h(requestOutputNo(r))}</h4>
+        <div class="field"><label>管理者側フォルダパス</label>
+        <input class="input mgr-path-input" data-path-idx="${i}" value="${h(paths[i]||'')}" placeholder="例：\\\\NAS\\\\管理者側\\\\特2025-17_2-2_公表"></div>
+      </div>`).join('')}
+      <div style="margin-top:.75rem">${checklistHtml()}</div>
+      ${ctaHtml()}
+    </div>`;
+    wrap.querySelectorAll('.mgr-path-input').forEach(el=>{
+      el.addEventListener('input',()=>{
+        const idx=+el.dataset.pathIdx;
+        if(!state.managerPaths) state.managerPaths=[];
+        state.managerPaths[idx]=el.value;
+      });
+      el.addEventListener('change',()=>{
+        const idx=+el.dataset.pathIdx;
+        if(!state.managerPaths) state.managerPaths=[];
+        state.managerPaths[idx]=el.value;
+        renderAll();
+      });
+    });
+    wrap.querySelectorAll('[data-check]').forEach(el=>{
+      el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+    });
+    bindCtaEvents(wrap);
+    return;
+  }
+
+  if(stage.id==='send'){
+    wrap.innerHTML=`
+    <div class="card-hd"><h3>管理者報告メール送信・CSV更新</h3><span class="badge">送信</span></div>
+    <div class="card-bd template-block">
+      <div class="template-card">
+        <h4>送信情報</h4>
+        <div class="field"><label>管理者報告メール送信日</label><input class="input" data-bind="sendDate" id="sendDate" value="${h(state.sendDate||'')}" placeholder="例：2026/07/05"></div>
+      </div>
+      <div style="margin-top:.75rem">${checklistHtml()}</div>
+      <div class="template-card" style="margin-top:.75rem">
+        <div class="field"><label>更新済み管理者報告台帳CSVをダウンロード</label>
+        <button class="primary-btn" id="csvDownloadBackBtn" type="button">📄 更新済み台帳CSVをダウンロード</button>
+        <div class="help" id="csvStatusStep7" style="margin-top:.4rem">${fileStatuses.csvStep7 || ''}</div>
+        </div>
+      </div>
+      ${ctaHtml()}
+    </div>`;
+    bindStandardInputs(wrap);
+    document.getElementById('csvDownloadBackBtn')?.addEventListener('click',downloadUpdatedLedgerCsv);
+    wrap.querySelectorAll('[data-check]').forEach(el=>{
+      el.addEventListener('change',()=>{checks[el.dataset.check]=el.checked;renderAll();});
+    });
+    bindCtaEvents(wrap);
+    return;
+  }
+}
+
+
+
+function parseJRCTHtml(input){
+  const data={};
+  let text='';
+  if(input.includes('<th')||input.includes('<td')){
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(input,'text/html');
+    text=doc.body?.innerText||input;
+  }else{
+    text=input;
+  }
+  const lines=text.split('\n').map(s=>s.replace(/\r/g,'').trim()).filter(Boolean);
+  const SKIP=/^(Name|氏名|\/|Affiliation|所属|Address|住所|Phone|電話|FAX|Email|電子メール|Plan|計画|e-Rad|〒|（個人|（組織|（施設|（多|Data|Patient|Among|Patholog|EGFR|Grade|Any|Thrombo|One|In |A |The |Although|Recurrence|Although|Result|Baseline|Participant|Brief|No|Phase)/i;
+  function isValue(v,label){
+    if(!v||v.length<2) return false;
+    if(label&&v.includes(label)) return false;
+    if(SKIP.test(v)) return false;
+    return true;
+  }
+  function findVal(label){
+    for(let i=0;i<lines.length;i++){
+      const line=lines[i];
+      if(!line.includes(label)) continue;
+      const parts=line.split('\t');
+      if(parts.length>=2){
+        for(let k=0;k<parts.length;k++){
+          if(parts[k].trim().includes(label)){
+            for(let p=k+1;p<parts.length;p++){
+              const v=parts[p].trim();
+              if(isValue(v,label)) return v;
+            }
+          }
+        }
+      }
+      for(let j=i+1;j<Math.min(i+4,lines.length);j++){
+        const v=lines[j].split('\t')[0].trim();
+        if(isValue(v,label)) return v;
+      }
+    }
+    return '';
+  }
+  function findAllVal(label){
+    const results=[];
+    let found=false;
+    for(let i=0;i<lines.length;i++){
+      const line=lines[i];
+      if(!line.includes(label)) continue;
+      found=false;
+      const parts=line.split('\t');
+      if(parts.length>=2){
+        for(let k=0;k<parts.length;k++){
+          if(parts[k].trim().includes(label)){
+            for(let p=k+1;p<parts.length;p++){
+              const v=parts[p].trim();
+              if(isValue(v,label)){results.push(v);found=true;break;}
+            }
+            break;
+          }
+        }
+      }
+      if(!found){
+        for(let j=i+1;j<Math.min(i+4,lines.length);j++){
+          const v=lines[j].split('\t')[0].trim();
+          if(isValue(v,label)){results.push(v);break;}
+        }
+      }
+    }
+    return results;
+  }
+  data.mailSubject=findVal('平易な研究名称')||findVal('Public Title');
+  data.studyTitle=findVal('研究名称')||findVal('Scientific Title');
+  data.managerName1=(findVal('統括管理者の氏名')||'').replace(/\s{2,}/g,' ').replace(/^[\s\u3000]+|[\s\u3000]+$/g,'');
+  data.managerAffil1=findVal('統括管理者の所属機関')||findVal('所属機関（実施医療機関）');
+  const mgrDept=findVal('統括管理者の所属部署');
+  if(mgrDept&&!mgrDept.includes('担当者')) data.managerDept1=mgrDept;
+  const contactNames=findAllVal('担当者氏名');
+  if(contactNames.length>0) data.managerName2=contactNames[0].replace(/\s{2,}/g,' ').replace(/^[\s\u3000]+|[\s\u3000]+$/g,'');
+  data.managerAffil2=findVal('担当者所属機関');
+  data.managerDept2=findVal('担当者所属部署');
+  const jrctText=findVal('臨床研究実施計画番号')||findVal('jRCT番号');
+  if(jrctText){const m=jrctText.match(/jRCT\w+/);if(m) data.jrctNo=m[0];}
+  const fundingLines=findAllVal('研究資金等の提供の有無');
+  data.isFunding=fundingLines.some(f=>f.includes('あり'));
+  const researchType=findVal('研究の種別');
+  data.isSpecific=!!(researchType&&researchType.includes('特定'));
+  data.isNonspecific=!!(researchType&&researchType.includes('非特定'));
+  const approvalStatus=findVal('医薬品医療機器等法における未承認、適応外、承認内の別');
+  const unapprovedCheck=findVal('著しい負担を与える検査その他の行為において未承認又は適応外の医薬品等の使用の有無');
+  data.isUnapproved=!!(
+    (approvalStatus&&(approvalStatus.includes('未承認')||approvalStatus.includes('適応外')))||
+    (unapprovedCheck&&unapprovedCheck.includes('あり'))
+  );
+  const pubDateText=findVal('最終公表日')||findVal('初回公表日');
+  if(pubDateText){
+    let m=pubDateText.match(/令和(\d+)年(\d+)月(\d+)日/);
+    if(m){const y=2018+parseInt(m[1]);data.pubDate=y+'/'+m[2].padStart(2,'0')+'/'+m[3].padStart(2,'0');}
+    else{m=pubDateText.match(/平成(\d+)年(\d+)月(\d+)日/);
+    if(m){const y=1988+parseInt(m[1]);data.pubDate=y+'/'+m[2].padStart(2,'0')+'/'+m[3].padStart(2,'0');}
+    else{m=pubDateText.match(/(\d{4})年(\d+)月(\d+)日/);if(m) data.pubDate=m[1]+'/'+m[2].padStart(2,'0')+'/'+m[3].padStart(2,'0');}}
+  }
+  data.jrctUrl='https://jrct.mhlw.go.jp/latest-detail/'+(data.jrctNo||'');
+  return data;
+}
+function applyJRCTData(data){
+  function setVal(id,val){
+    if(!val) return;
+    state[id]=val;
+    const el=document.querySelector('[data-bind="'+id+'"]');
+    if(!el) return;
+    const s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,'value').set;
+    s.call(el,val);
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  setVal('mailSubject',data.mailSubject);
+  setVal('studyTitle',data.studyTitle);
+  setVal('jrctNo',data.jrctNo);
+  setVal('managerAffil1',data.managerAffil1);
+  setVal('managerDept1',data.managerDept1);
+  setVal('managerTitle1',data.managerTitle1);
+  setVal('managerName1',data.managerName1);
+  setVal('managerAffil2',data.managerAffil2);
+  setVal('managerDept2',data.managerDept2);
+  setVal('managerTitle2',data.managerTitle2);
+  setVal('managerName2',data.managerName2);
+  if(data.isSpecific){
+    const el=document.getElementById('studyTypeSpecific');
+    if(el&&!el.checked) el.click();
+    const ns=document.getElementById('studyTypeNonspecific');
+    if(ns&&ns.checked) ns.click();
+    state.studyTypeNonspecific=false;
+  }
+  if(data.isNonspecific){
+    const el=document.getElementById('studyTypeNonspecific');
+    if(el&&!el.checked) el.click();
+    const sp=document.getElementById('studyTypeSpecific');
+    if(sp&&sp.checked) sp.click();
+    state.studyTypeSpecific=false;
+    state.studyTypeUnapproved=false;
+    state.studyTypeFunding=false;
+    const ua=document.getElementById('studyTypeUnapproved');
+    if(ua&&ua.checked) ua.click();
+    const fd=document.getElementById('studyTypeFunding');
+    if(fd&&fd.checked) fd.click();
+  }
+  if(data.isUnapproved){const el=document.getElementById('studyTypeUnapproved');if(el&&!el.checked) el.click();}
+  if(data.isFunding){const el=document.getElementById('studyTypeFunding');if(el&&!el.checked) el.click();}
+  if(data.pubDate&&state.requestRows&&state.requestRows[0]){
+    state.requestRows[0].date=data.pubDate;
+  }
+  if(data.jrctUrl&&state.requestRows&&state.requestRows[0]){
+    state.requestRows[0].url=data.jrctUrl;
+  }
+  renderAll();
+}
+const ASSIST_DATA = {
+  intake:{
+    title:'こんにちは！入力をサポートします',
+    steps:[
+      'まず、jRCTのページを開いてください。ページ内のテキストをすべて選択（Ctrl+A）してコピー（Ctrl+C）します。',
+      '次に、下の「JRCTページの内容をここに貼り付けてください」と書かれた枠の中に貼り付け（Ctrl+V）ます。',
+      '「貼り付けて自動入力」ボタンを押すと、研究課題名や研究責任者が自動で入力されます。',
+      '残りの項目（研究略称、研究区分、起案者名など）を確認して入力してください。',
+      '画面下部の「複数依頼の同時入力」エリアで、報告区分と元の起案番号を設定します。'
+    ]
+  },
+  folders:{
+    title:'フォルダ名を確認しましょう',
+    steps:[
+      'ステップ1で入力した内容をもとに、3つのフォルダ名が自動生成されました。',
+      '「申請フォルダ」「CSCC側公表フォルダ」「管理者側公表フォルダ」の3つです。',
+      'フォルダ名を確認し、問題なければチェックリストにチェックを入れて次に進んでください。',
+      'フォルダ名のルール： 特XXXX-XX-XXXX-X-2_公表(cscc) のような形式になります。'
+    ]
+  },
+  drafts:{
+    title:'書類のひな形を作成します',
+    steps:[
+      '添付のWord（docx）ひな形ファイルを読み込むと、データが自動で差し込まれます。',
+      '「起案文ひな形(.docx)」と「報告案ひな形(.docx)」の2種類があります。',
+      '「参照」ボタンをクリックして、パソコン内の該当ファイルを選んでください。',
+      '起案docxや報告案docxを出力して内容を確認したら、最後に「フォルダZIPを生成」ボタンで一式をダウンロードします。'
+    ]
+  },
+  files:{
+    title:'ファイル名を最終確認します',
+    steps:[
+      'NASに保存するファイルの命名規則が一覧表示されます。',
+      '各ファイルの「ファイル名をコピー」ボタンを使うと、名前を間違えずに済みます。',
+      'すべてのファイルを確認したら、チェックリストにチェックを入れて完了してください。'
+    ]
+  },
+  work:{
+    title:'CSCC側の作業を始めます',
+    steps:[
+      'まず、管理者報告台帳CSVファイルを読み込みます。',
+      '「参照」ボタンから「管理者報告_進捗台帳.csv」を選んでください。',
+      '読み込まれた行の中から、作業する対象の案件にチェックを入れます。',
+      '選択した案件に対応するCSCC側フォルダが表示されます。必要書類を格納してください。'
+    ]
+  },
+  path:{
+    title:'保存先パスを確定します',
+    steps:[
+      '管理者側の公表フォルダに書類を格納したら、そのフォルダのパスを入力します。',
+      '例： \\\\NAS\\管理者側\\特2025-17_2-2_公表',
+      'メール保存ファイル名が自動生成されます。確認してください。'
+    ]
+  },
+  send:{
+    title:'最後にメール送信と台帳更新です',
+    steps:[
+      '管理者報告メールの送信日を入力してください。',
+      'メール案（件名・本文）を確認します。内容は入力データから自動生成されています。',
+      '「更新済み台帳CSVをダウンロード」ボタンで、進捗台帳を更新します。',
+      'これですべての作業が完了です。お疲れさまでした！'
+    ]
+  }
+};
+
+function updateNavBtn(){
+  const btn=document.getElementById('navToggleBtn');
+  if(btn) btn.textContent=state.navEnabled ? 'ナビON' : 'ナビOFF';
+}
+
+function highlightEmptyFields(){
+  if(!state.navEnabled) return;
+  document.querySelectorAll('.assist-highlight').forEach(el=>el.classList.remove('assist-highlight'));
+  const stage=stages[current];
+  if(!stage||!stage.fields) return;
+  stage.fields.forEach(f=>{
+    const val=getValue(f.id);
+    if(!val){
+      const el=document.getElementById(f.id);
+      if(el&&el.type!=='hidden') el.classList.add('assist-highlight');
+    }
+  });
+}
+
+function renderAssistPopup(){
+  if(!state.navEnabled) return;
+  const stage=stages[current];
+  const key=stage.id;
+  if(state.assistSeen[key]) return;
+  const data=ASSIST_DATA[key];
+  if(!data) return;
+  state.assistSeen[key]=true;
+  const overlay=document.createElement('div');
+  overlay.className='assist-overlay';
+  overlay.innerHTML=`
+<div class="assist-dialog">
+<div class="assist-dialog-inner">
+<div class="assist-icon">💡</div>
+<h3>${data.title}</h3>
+<ul>${data.steps.map(s=>'<li>'+h(s)+'</li>').join('')}</ul>
+<div class="assist-btn-row">
+<button class="primary-btn" id="assistCloseBtn">はい、わかりました</button>
+</div>
+</div>
+</div>`;
+  document.body.appendChild(overlay);
+  function closeAssist(){
+    overlay.remove();
+    highlightEmptyFields();
+  }
+  document.getElementById('assistCloseBtn').addEventListener('click',closeAssist);
+  overlay.addEventListener('click',e=>{if(e.target===overlay) closeAssist();});
+}
+
+function bindMailEditorEvents(subjId, bodyId, statusId){
+  document.getElementById(subjId)?.addEventListener('input',function(){state.mailTouched=true;state.mailSubjectEdit=this.value;});
+  document.getElementById(bodyId)?.addEventListener('input',function(){state.mailTouched=true;state.mailBodyEdit=this.value;});
+  document.getElementById('dlPathMailBtn')?.addEventListener('click',()=>{
+    const d=emailDraft();
+    const txt=`件名：${d.subject}\n\n${d.body}`;
+    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+    downloadBlob(blob, combinedMailFileName());
+  });
+  document.getElementById('copyPathMailBtn')?.addEventListener('click',()=>{
+    const d=emailDraft();
+    const txt=`件名：${d.subject}\n\n${d.body}`;
+    copyToClipboard(txt).then(()=>{
+      const el=document.getElementById(statusId || 'pathMailStatus');
+      if(el){el.textContent='\u2705 \u30AF\u30EA\u30C3\u30D7\u30DC\u30FC\u30C9\u306B\u30B3\u30D4\u30FC\u3057\u307E\u3057\u305F\u3002';el.style.color='var(--success)';}
+    });
+  });
+}
+
+function toggleNav(){
+  state.navEnabled=!state.navEnabled;
+  if(!state.navEnabled) state.assistSeen={};
+  renderAll();
+}
+
+function renderAll(){
+  initMailEdits();
+  renderMain();
+  renderTemplate();
+  updateModeUI();
+  updateNavBtn();
+  renderAssistPopup();
+}
+function resetAll(){
+  current=stages.findIndex(s=>s.id==='intake');
+  done=Array(stages.length).fill(false);
+  Object.keys(checks).forEach(k=>checks[k]=false);
+  state.appMode='front';
+  state.loadedLedgerRows=[];
+  state.loadedLedgerHeaders=[];
+  state.selectedLedgerIndexes=[];
+  state.requestRows=[{type:'初回公表',base:'特2025-17_2-1',date:'',url:'',facilityType:'',facilityDetail:''}];
+  state.managerPaths=[];
+  state.stepEnterTimestamp=null;
+  state.stepDurations={};
+  state.lastRenderedStageId=null;
+  ['mailSubject','studyTitle','jrctNo','managerAffil1','managerDept1','managerTitle1','managerName1','managerAffil2','managerDept2','managerTitle2','managerName2','drafterName','drafterDept','sendDate','studyTypeSpecific','studyTypeUnapproved','studyTypeFunding','studyTypeNonspecific'].forEach(k=>{delete state[k];});
+  state.draftDate=todayFormatted();
+  fileStatuses={};
+  state.assistSeen={};
+  resetMailEdits();
+  renderAll();
+}
+window.resetAll=resetAll;
+
+document.getElementById('resetBtn').addEventListener('click',resetAll);
+document.getElementById('modeFrontBtn').addEventListener('click',()=>{
+  state.appMode='front';
+  current=stages.findIndex(s=>s.id==='intake');
+  renderAll();
+});
+document.getElementById('modeBackBtn').addEventListener('click',()=>{
+  state.appMode='back';
+  current=stages.findIndex(s=>s.id==='work');
+  renderAll();
+});
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  const root=document.documentElement;
+  const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);
+  document.getElementById('themeBtn').textContent=next==='dark'?'☀️':'🌙';
+});
+document.getElementById('navToggleBtn').addEventListener('click',toggleNav);
+
+current=stages.findIndex(s=>s.id==='intake');
+if(!state.draftDate) state.draftDate=todayFormatted();
+renderAll();
+</script>
+</body>
+</html>
