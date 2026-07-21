@@ -5,46 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>管理者報告フロー統合パネル - ログイン</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
 <style>
-:root,[data-theme="light"]{
---bg:#f0f4ff;--surface:#ffffff;--surface-2:#f8faff;--surface-3:#e8f0fe;--border:#d0dff5;
---text:#2d3748;--muted:#718096;--faint:#a0aec0;--inv:#ffffff;
---primary:#6c63ff;--primary-2:#5a52d5;--primary-light:#e8e6ff;--primary-glow:rgba(108,99,255,.15);
---success:#48bb78;--success-soft:#c6f6d5;--success-glow:rgba(72,187,120,.1);
---warn:#ed8936;--warn-soft:#fefcbf;
---error:#fc8181;--error-soft:#fed7d7;
---blue:#4299e1;--blue-soft:#bee3f8;
---robot-accent:#ff6b9d;--robot-accent-light:#fff0f6;
---shadow-sm:0 2px 8px rgba(108,99,255,.08),0 4px 16px rgba(108,99,255,.04);--shadow-md:0 4px 20px rgba(108,99,255,.12),0 8px 32px rgba(108,99,255,.06);--shadow-lg:0 8px 40px rgba(108,99,255,.16);
---r-sm:.75rem;--r-md:1rem;--r-lg:1.25rem;--r-xl:1.5rem;--r-2xl:2rem;--pill:9999px;
---font:'Satoshi','Hiragino Sans','Yu Gothic',-apple-system,sans-serif;
-}
-[data-theme="dark"]{
---bg:#1a1f36;--surface:#252b42;--surface-2:#2d3555;--surface-3:#364063;--border:#4a5578;
---text:#e2e8f0;--muted:#a0aec0;--faint:#718096;--inv:#1a1f36;
---primary:#9f7aea;--primary-2:#b794f4;--primary-light:#2d2555;--primary-glow:rgba(159,122,234,.2);
---success:#68d391;--success-soft:#1c3a2a;--success-glow:rgba(104,211,145,.15);
---warn:#f6ad55;--warn-soft:#4a3728;
---error:#fc8181;--error-soft:#4a2828;
---blue:#63b3ed;--blue-soft:#253341;
---robot-accent:#ff6b9d;--robot-accent-light:#3d2535;
---shadow-sm:0 2px 8px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--shadow-md:0 4px 20px rgba(0,0,0,.35),0 8px 32px rgba(0,0,0,.25);--shadow-lg:0 8px 40px rgba(0,0,0,.4);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-button,input{font:inherit}
-button{cursor:pointer;border:none;background:none;color:inherit}
-::selection{background:var(--primary);color:var(--inv)}
-
-.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 1.5rem;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--border);box-shadow:0 1px 0 var(--border)}
-.brand{display:flex;gap:.9rem;align-items:center}
-.brand svg{width:34px;height:34px;color:var(--primary);filter:drop-shadow(0 1px 2px var(--primary-glow))}
-.brand h1{font-size:1rem;line-height:1.2;font-weight:700;letter-spacing:-.01em}
-.brand p{font-size:.74rem;color:var(--muted);letter-spacing:.01em}
-.actions{display:flex;gap:.5rem;align-items:center}
-.icon-btn{width:36px;height:36px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1)}
-.icon-btn:hover{background:var(--surface-3);border-color:var(--faint);transform:translateY(-1px);box-shadow:var(--shadow-md)}
-
 .login-wrap{display:flex;align-items:center;justify-content:center;flex:1;padding:1.5rem}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);box-shadow:var(--shadow-md);max-width:420px;width:100%;overflow:hidden;animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
 .login-hd{padding:2rem 2rem 1.5rem;text-align:center;background:linear-gradient(135deg,var(--primary-light),var(--surface-2) 80%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
@@ -56,18 +18,9 @@ button{cursor:pointer;border:none;background:none;color:inherit}
 .login-field{margin-bottom:1rem}
 .login-field label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.3rem;letter-spacing:.01em}
 .login-field .input{width:100%;height:44px}
-.input{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:var(--r-md);padding:.65rem .8rem;min-height:40px;transition:border-color .2s,box-shadow .2s;font-size:.88rem}
-.input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
-.primary-btn{border-radius:var(--pill);transition:all .2s cubic-bezier(.4,0,.2,1);min-height:36px;padding:0 .85rem;font-size:.8rem;font-weight:600;border:1px solid var(--primary);background:var(--primary);color:var(--inv);box-shadow:0 2px 8px var(--primary-glow);font-weight:700}
-.primary-btn:hover{background:var(--primary-2);border-color:var(--primary-2);box-shadow:0 4px 16px var(--primary-glow);transform:translateY(-1px)}
-.primary-btn:active{transform:translateY(0)}
 .login-btn-row{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
 .login-hint{margin-top:.6rem;font-size:.72rem;color:var(--faint);text-align:center;line-height:1.5}
 .login-error{margin-top:.6rem;padding:.5rem .7rem;border-radius:var(--r-md);background:var(--error-soft);color:var(--error);font-size:.78rem;text-align:center;display:none}
-
-@keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 .login-hd svg{animation:float 3s ease-in-out infinite}
 @media(max-width:560px){
 .login-card{max-width:100%}
@@ -135,14 +88,8 @@ button{cursor:pointer;border:none;background:none;color:inherit}
 </div>
 </div>
 
+<script src="common.js"></script>
 <script>
-document.getElementById('themeBtn').addEventListener('click',function(){
-var root=document.documentElement;
-var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
-root.setAttribute('data-theme',next);
-this.textContent=next==='dark'?'☀️':'🌙';
-});
-
 document.getElementById('loginBtn').addEventListener('click',function(){
 window.location.href='https://morikawa001.github.io/kanri_flow/procedure.html';
 });
