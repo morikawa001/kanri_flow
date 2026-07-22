@@ -2538,7 +2538,7 @@ CSCC側：${h(fs.cscc)}
 報告区分：${h(r.type)}
 研究題名：${h(getValue('studyTitle')||'')}
 研究責任者：${h([getValue('managerAffil1'),getValue('managerDept1'),getValue('managerTitle1'),getValue('managerName1')].filter(Boolean).join(' '))}
-${r.type==='定期報告'?'報告期間':'公表日'}：${h(r.date||'')}
+${r.type==='定期報告'?'報告期間':'公表日'}：${h(formatDateToJapanese(r.date||''))}
 jRCT URL：${h(r.url||'')}</div>
 
           <div class="section-title">ZIPに含めるフォルダ</div>
