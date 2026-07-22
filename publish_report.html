@@ -626,7 +626,7 @@ function autoEmailDraft(){
   const title=getValue('mailSubject')||'【研究略称】';
   const rows=requestRowsData();
   const paths=state.managerPaths||[];
-  const details=rows.map((r,i)=>`・${requestOutputNo(r)}_公表（${r.date||'jRCT 公表日未入力'}）\n「NAS」内保存場所：${paths[i]||'（決裁後に確定する管理者側フォルダパス）'}`).join('\n\n');
+  const details=rows.map((r,i)=>`・${requestOutputNo(r)}_公表（${formatDateToJapanese(r.date)||'jRCT 公表日未入力'}）\n「NAS」内保存場所：${paths[i]||'（決裁後に確定する管理者側フォルダパス）'}`).join('\n\n');
   const drafter=getValue('drafterName')||'起案・報告案の報告者';
   return {
     subject:`【${title}】管理者「報告」：完了`,
@@ -1149,7 +1149,7 @@ function reportDocxDataForRow(r){
       const parts = [];
       if(pubPairs.length) {
         const maxW = Math.max(...pubPairs.map(([t])=>fullWidthWidth(t)));
-        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${normalizeToYmdSlash(v?.date||'')}`).join('、') + '）');
+        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${formatDateToJapanese(v?.date||'')}`).join('、') + '）');
       }
       if(hasPeriodic) {
         const periodicRow = relatedRows.find(x => x?.type === '定期報告');
@@ -1472,7 +1472,7 @@ function docxDataForRow(r){
       const parts = [];
       if(pubPairs.length) {
         const maxW = Math.max(...pubPairs.map(([t])=>fullWidthWidth(t)));
-        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${normalizeToYmdSlash(v?.date||'')}`).join('、') + '）');
+        parts.push('実施計画の公表（' + pubPairs.map(([t,v])=>`${padFullWidth(t,maxW)}　${formatDateToJapanese(v?.date||'')}`).join('、') + '）');
       }
       if(hasPeriodic) {
         const periodicRow = targetRows.find(x => x?.type === '定期報告');
