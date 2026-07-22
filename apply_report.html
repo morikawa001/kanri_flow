@@ -1041,7 +1041,7 @@ function reportDocxDataForRow(r){
     '新規公表日': normalizeToYmdSlash(initialRow?.date || ''),
     '新規URL': safeDocxText(initialRow?.url || ''),
     '公表区分_変更': mark(!!changeRow || !!minorRow),
-    '公表区分_変更_詳細': mark(!!changeRow),
+    '公表区分_変更_詳細': mark(!!changeRow || !!minorRow),
     '変更公表日': normalizeToYmdSlash(changeRow?.date || ''),
     '変更URL': safeDocxText(changeRow?.url || ''),
     '公表区分_軽微': mark(!!minorRow),
