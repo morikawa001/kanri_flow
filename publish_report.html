@@ -1037,10 +1037,10 @@ function reportDocxDataForRow(r){
     '新規URL': safeDocxText(initialRow?.url || ''),
     '公表区分_上位変更': mark(!!changeRow),
     '公表区分_下位変更': mark(!!changeRow),
-    '変更公表日': normalizeToYmdSlash(changeRow?.date || ''),
+    '変更公表日': formatDateToJapanese(changeRow?.date || ''),
     '変更URL': safeDocxText(changeRow?.url || ''),
     '公表区分_軽微': mark(!!minorRow),
-    '軽微公表日': normalizeToYmdSlash(minorRow?.date || ''),
+    '軽微公表日': formatDateToJapanese(minorRow?.date || ''),
     '軽微URL': safeDocxText(minorRow?.url || ''),
     '公表区分_届出外': mark(isTodokedeGai),
     '届出外公表日': formatDateToJapanese(todokedeGaiRow?.date || ''),
@@ -1384,10 +1384,10 @@ function docxDataForRow(r){
     '報告区分': joinDocxLines(targetRows.map(x => x?.type || '')),
 
     '公表日': joinDocxLines([
-      changeRow ? normalizeToYmdSlash(changeRow.date || '') : '',
-      minorRow ? normalizeToYmdSlash(minorRow.date || '') : '',
-      initialRow ? normalizeToYmdSlash(initialRow.date || '') : '',
-      todokedeGaiRow ? normalizeToYmdSlash(todokedeGaiRow.date || '') : ''
+      changeRow ? formatDateToJapanese(changeRow.date || '') : '',
+      minorRow ? formatDateToJapanese(minorRow.date || '') : '',
+      initialRow ? formatDateToJapanese(initialRow.date || '') : '',
+      todokedeGaiRow ? formatDateToJapanese(todokedeGaiRow.date || '') : ''
     ]),
 
     'jRCT URL': alignedDocxLines(
@@ -1406,8 +1406,8 @@ function docxDataForRow(r){
       reportPairs.map(([_,row])=>(row?.url||'').trim())
     ),
 
-    '変更公表日': normalizeToYmdSlash(changeRow?.date || ''),
-    '軽微変更公表日': normalizeToYmdSlash(minorRow?.date || ''),
+    '変更公表日': formatDateToJapanese(changeRow?.date || ''),
+    '軽微変更公表日': formatDateToJapanese(minorRow?.date || ''),
     '変更URL': safeDocxText(changeRow?.url || ''),
     '軽微変更URL': safeDocxText(minorRow?.url || ''),
 
