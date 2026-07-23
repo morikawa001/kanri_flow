@@ -1053,13 +1053,13 @@ function reportDocxDataForRow(r) {
         var pairs = [['初回公表', initialR], ['変更', changeR], ['軽微変更', minorR]].filter(function(arr) { return arr[1]; });
         if (pairs.length) {
           var maxW = Math.max.apply(null, pairs.map(function(arr) { return fullWidthWidth(arr[0]); }));
-          parts.push('実施計画の公表（' + pairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + (arr[1]?.date || '').trim(); }).join('、') + '）');
+          parts.push('実施計画の公表（' + pairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + formatDateToJapanese(arr[1]?.date || ''); }).join('、') + '）');
         }
       }
       if (hasPeriodic) {
         var periodicRow = relatedRows.find(function(x) { return x?.type === '定期報告'; });
         if (periodicRow?.date) {
-          parts.push('定期報告（報告期間：' + formatDateRangeToSlash(periodicRow.date) + '）');
+          parts.push('定期報告（報告期間：' + formatDateRangeToJapanese(periodicRow.date) + '）');
         }
       }
       return parts.join('\n');
@@ -1100,7 +1100,7 @@ function reportDocxDataForRow(r) {
       if (hasPeriodic) {
         var periodicRow = relatedRows.find(function(x) { return x?.type === '定期報告'; });
         if (periodicRow?.date) {
-          parts.push('定期報告（報告期間：' + formatDateRangeToSlash(periodicRow.date) + '）');
+          parts.push('定期報告（報告期間：' + formatDateRangeToJapanese(periodicRow.date) + '）');
         }
       }
       if (hasIssue) {
@@ -1318,7 +1318,7 @@ function docxDataForRow(r) {
     ),
 
     '報告事項一覧': safeDocxText((function() {
-      var pairs = reportPairs.map(function(arr) { return [arr[0], (arr[1]?.date || '').trim()]; }).filter(function(arr) { return arr[0] || arr[1]; });
+      var pairs = reportPairs.map(function(arr) { return [arr[0], formatDateToJapanese(arr[1]?.date || '')]; }).filter(function(arr) { return arr[0] || arr[1]; });
       if (!pairs.length) return '';
       var maxW = Math.max.apply(null, pairs.map(function(arr) { return fullWidthWidth(arr[0]); }));
       return pairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + arr[1]; }).join('、');
@@ -1352,7 +1352,7 @@ function docxDataForRow(r) {
       var hasOther = targetRows.some(function(x) { return ['初回公表', '変更', '軽微変更'].includes(x?.type); });
       var parts = [];
       if (hasOther) {
-        var pairs = reportPairs.map(function(arr) { return [arr[0], (arr[1]?.date || '').trim()]; }).filter(function(arr) { return arr[0] || arr[1]; });
+        var pairs = reportPairs.map(function(arr) { return [arr[0], formatDateToJapanese(arr[1]?.date || '')]; }).filter(function(arr) { return arr[0] || arr[1]; });
         if (pairs.length) {
           var maxW = Math.max.apply(null, pairs.map(function(arr) { return fullWidthWidth(arr[0]); }));
           parts.push('実施計画の公表（' + pairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + arr[1]; }).join('、') + '）');
@@ -1361,7 +1361,7 @@ function docxDataForRow(r) {
       if (hasPeriodic) {
         var periodicRow = targetRows.find(function(x) { return x?.type === '定期報告'; });
         if (periodicRow?.date) {
-          parts.push('定期報告（報告期間：' + formatDateRangeToSlash(periodicRow.date) + '）');
+          parts.push('定期報告（報告期間：' + formatDateRangeToJapanese(periodicRow.date) + '）');
         }
       }
       return parts.join('\n');
@@ -1399,7 +1399,7 @@ function docxDataForRow(r) {
       if (hasPeriodic) {
         var periodicRow = targetRows.find(function(x) { return x?.type === '定期報告'; });
         if (periodicRow?.date) {
-          parts.push('定期報告（報告期間：' + formatDateRangeToSlash(periodicRow.date) + '）');
+          parts.push('定期報告（報告期間：' + formatDateRangeToJapanese(periodicRow.date) + '）');
         }
       }
       if (hasIssue) {
