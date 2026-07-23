@@ -965,6 +965,13 @@ function reportDocxDataForRow(r) {
     '作成月': safeDocxText(today.month),
     '作成日': safeDocxText(today.day),
 
+    '公表日': joinDocxLines([
+      initialRow ? formatDateToJapanese(initialRow.date || '') : '',
+      changeRow ? formatDateToJapanese(changeRow.date || '') : '',
+      minorRow ? formatDateToJapanese(minorRow.date || '') : '',
+      todokedeGaiRow ? formatDateToJapanese(todokedeGaiRow.date || '') : ''
+    ]),
+
     '研究種別_特定': mark(isSpecific),
     '特定内訳_未承認適応外': mark(isSpecific && isUnapproved),
     '特定内訳_資金提供': mark(isSpecific && isFunding),
