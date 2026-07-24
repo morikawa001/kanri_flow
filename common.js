@@ -524,7 +524,7 @@ function parseCsvRobust(text) {
       } else {
         inQ = !inQ;
       }
-    } else if (ch === ',' && !inQ) {
+    } else if ((ch === ',' || ch === '\t') && !inQ) {
       row.push(cell);
       cell = '';
     } else if ((ch === '\n' || ch === '\r') && !inQ) {
