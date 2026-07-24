@@ -1394,12 +1394,12 @@ function docxDataForRow(r) {
       var parts = [];
       if (pubPairs.length) {
         var maxW = Math.max.apply(null, pubPairs.map(function(arr) { return fullWidthWidth(arr[0]); }));
-        parts.push('実施計画の公表（' + pubPairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + formatDateToJapanese(arr[1]?.date || ''); }).join('、') + '）');
+        parts.push('実施計画の公表（' + pubPairs.map(function(arr) { return padFullWidth(arr[0], maxW) + '　' + (arr[1]?.date || ''); }).join('、') + '）');
       }
       if (hasPeriodic) {
         var periodicRow = targetRows.find(function(x) { return x?.type === '定期報告'; });
         if (periodicRow?.date) {
-          parts.push('定期報告（報告期間：' + formatDateRangeToJapanese(periodicRow.date) + '）');
+          parts.push('定期報告（報告期間：' + periodicRow.date + '）');
         }
       }
       if (hasIssue) {
@@ -1412,7 +1412,6 @@ function docxDataForRow(r) {
       }
       return parts.join('\n');
     })()),
-
     '詳細内容': safeDocxText((function() {
       var hasPeriodic = targetRows.some(function(x) { return x?.type === '定期報告'; });
       var hasIssue = targetRows.some(function(x) { return x?.type && x.type.includes('疾病等'); });
