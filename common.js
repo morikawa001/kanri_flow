@@ -64,7 +64,7 @@ function h(str) {
 // DOM要素の値を取得（フォールバック付き）
 function getValue(id) {
   var el = document.getElementById(id);
-  return el ? el.value.trim() : '';
+  return el ? el.value.trim() : (state[id] || '');
 }
 
 // DOMからstateにデータを同期
